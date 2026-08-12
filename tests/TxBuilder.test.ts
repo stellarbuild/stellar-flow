@@ -846,8 +846,10 @@ describe('build()', () => {
   });
 
   it('calls prepareTransaction for invokeContract', async () => {
-    const b = TxBuilder.for(MOCK_SOURCE, { network: 'testnet', sorobanUrl: 'http://localhost:8000' })
-      .invokeContract({ contractId: DEST, functionName: 'hello' });
+    const b = TxBuilder.for(MOCK_SOURCE, {
+      network: 'testnet',
+      sorobanUrl: 'http://localhost:8000',
+    }).invokeContract({ contractId: DEST, functionName: 'hello' });
     const built = await b.build();
     expect(built.xdr).toBeDefined();
   });

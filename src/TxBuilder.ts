@@ -541,11 +541,12 @@ export class TxBuilder {
 
     let scValArgs: xdr.ScVal[] = [];
     if (params.args) {
-      scValArgs = params.args.map(arg => {
+      scValArgs = params.args.map((arg) => {
         if (arg instanceof xdr.ScVal) return arg;
         if (typeof arg === 'object' && arg !== null) {
-          if ('address' in arg && typeof (arg as any).address === 'string') {
-            return nativeToScVal((arg as any).address, { type: 'address' });
+          const obj = arg as Record<string, unknown>;
+          if ('address' in obj && typeof obj.address === 'string') {
+            return nativeToScVal(obj.address, { type: 'address' });
           }
         }
         return nativeToScVal(arg);
@@ -559,7 +560,7 @@ export class TxBuilder {
             contractAddress: contractAddress.toScAddress(),
             functionName: params.functionName,
             args: scValArgs,
-          })
+          }),
         ),
         auth: [],
       }),
@@ -657,12 +658,14 @@ export class TxBuilder {
 
     let finalTx = tx;
     const hasSoroban = this.operations.some(
-      (op) => op.body().switch() === xdr.OperationType.invokeHostFunction()
+      (op) => op.body().switch() === xdr.OperationType.invokeHostFunction(),
     );
 
     if (hasSoroban) {
       if (!this.options.sorobanUrl) {
-        throw new Error('sorobanUrl is required in TxBuilderOptions when invoking a Soroban contract');
+        throw new Error(
+          'sorobanUrl is required in TxBuilderOptions when invoking a Soroban contract',
+        );
       }
       const sorobanServer = new rpc.Server(this.options.sorobanUrl);
       finalTx = (await sorobanServer.prepareTransaction(tx)) as Transaction;

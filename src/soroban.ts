@@ -81,8 +81,6 @@ export const ScVal = {
    * Create an ScVal map from an array of key-value pairs
    */
   Map: (entries: { key: xdr.ScVal; val: xdr.ScVal }[]): xdr.ScVal => {
-    return xdr.ScVal.scvMap(
-      entries.map(e => new xdr.ScMapEntry({ key: e.key, val: e.val }))
-    );
-  }
+    return xdr.ScVal.scvMap(entries.map((e) => new xdr.ScMapEntry({ key: e.key, val: e.val })));
+  },
 };

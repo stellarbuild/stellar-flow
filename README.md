@@ -244,6 +244,23 @@ const tx = await TxBuilder.for(keypair, { network: 'mainnet' })
   .build();
 ```
 
+### Invoke a Soroban Contract
+
+```typescript
+import { ScVal } from '@stellarbuild/stellar-tx-builder';
+
+const tx = await TxBuilder.for(keypair, { 
+  network: 'testnet',
+  sorobanUrl: 'https://soroban-testnet.stellar.org'
+})
+  .invokeContract({
+    contractId: 'CCLZ...',
+    functionName: 'increment',
+    args: [ScVal.u32(1)]
+  })
+  .build(); // Automatically simulates fee and footprint!
+```
+
 ### Multi-operation Transaction
 
 ```typescript
@@ -296,7 +313,7 @@ const xdr = built.toXDR();
 | `addPathPayment()` | `PathPaymentStrictSend` |
 | `addSetOptions()` | `SetOptions` |
 | `addManageData()` | `ManageData` |
-| `invokeContract()` | `InvokeHostFunction` *(planned — see Roadmap)* |
+| `invokeContract()` | `InvokeHostFunction` |
 
 ---
 

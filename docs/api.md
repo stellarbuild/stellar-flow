@@ -305,10 +305,9 @@ interface ManageDataParams {
 
 ---
 
-### `.invokeContract(params)` *(Validation stub — v0.4 planned)*
+### `.invokeContract(params)`
 
-Validates Soroban contract invocation parameters but **throws a not-implemented
-error** at runtime. Full implementation is planned for v0.4.0.
+Constructs a Soroban contract invocation using `Operation.invokeHostFunction`. Automatically converts basic JavaScript types and allows native `xdr.ScVal` arguments for complex inputs.
 
 ```typescript
 invokeContract(params: InvokeContractParams): this
@@ -318,17 +317,19 @@ invokeContract(params: InvokeContractParams): this
 
 ```typescript
 interface InvokeContractParams {
-  contractId: string;   // Stellar contract address (C... or G...)
+  contractId: string;   // Stellar contract address (C...)
   functionName: string; // Exported contract function name
   args?: (
     | string
     | number
     | boolean
     | { address: string }
-    | { amount: string; asset: { code: string; issuer: string } | 'XLM' }
+    | xdr.ScVal
   )[];
 }
 ```
+
+*Note: For complex argument types, you should import the `ScVal` builder utilities (`ScVal.u64`, `ScVal.Vec`, etc.) to securely construct your native `xdr.ScVal` inputs.*
 
 ---
 

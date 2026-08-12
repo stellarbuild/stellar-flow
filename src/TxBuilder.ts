@@ -10,6 +10,8 @@ import {
   Transaction,
   xdr,
   Address,
+  rpc,
+  nativeToScVal,
 } from '@stellar/stellar-sdk';
 import type {
   TxBuilderOptions,
@@ -530,18 +532,39 @@ export class TxBuilder {
       throw new Error('Function name must be a non-empty string');
     }
 
-    // Validate contract ID format
+    let contractAddress: Address;
     try {
-      new Address(params.contractId);
+      contractAddress = new Address(params.contractId);
     } catch (error) {
       throw new Error('Invalid contract ID format');
     }
 
-    // Placeholder - full Soroban implementation requires complex XDR handling
-    // This validates inputs and provides type safety
-    throw new Error(
-      'Soroban contract invocation is not yet fully implemented. Use @stellar/stellar-sdk directly for Soroban operations.',
+    let scValArgs: xdr.ScVal[] = [];
+    if (params.args) {
+      scValArgs = params.args.map(arg => {
+        if (arg instanceof xdr.ScVal) return arg;
+        if (typeof arg === 'object' && arg !== null) {
+          if ('address' in arg && typeof (arg as any).address === 'string') {
+            return nativeToScVal((arg as any).address, { type: 'address' });
+          }
+        }
+        return nativeToScVal(arg);
+      });
+    }
+
+    this.operations.push(
+      Operation.invokeHostFunction({
+        func: xdr.HostFunction.hostFunctionTypeInvokeContract(
+          new xdr.InvokeContractArgs({
+            contractAddress: contractAddress.toScAddress(),
+            functionName: params.functionName,
+            args: scValArgs,
+          })
+        ),
+        auth: [],
+      }),
     );
+    return this;
   }
 
   /**
@@ -632,6 +655,19 @@ export class TxBuilder {
 
     const tx = builder.build() as Transaction;
 
+    let finalTx = tx;
+    const hasSoroban = this.operations.some(
+      (op) => op.body().switch() === xdr.OperationType.invokeHostFunction()
+    );
+
+    if (hasSoroban) {
+      if (!this.options.sorobanUrl) {
+        throw new Error('sorobanUrl is required in TxBuilderOptions when invoking a Soroban contract');
+      }
+      const sorobanServer = new rpc.Server(this.options.sorobanUrl);
+      finalTx = (await sorobanServer.prepareTransaction(tx)) as Transaction;
+    }
+
     // Note: Fee bump implementation requires SDK compatibility fixes
     // For now, this validates inputs and provides structure
     if (this.feeBumpSource) {
@@ -640,6 +676,6 @@ export class TxBuilder {
       );
     }
 
-    return new BuiltTransactionImpl(tx, server);
+    return new BuiltTransactionImpl(finalTx, server);
   }
 }

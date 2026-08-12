@@ -51,6 +51,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [0.4.0] — 2026-08-12
+
+### Added
+- `invokeContract()` support for Soroban smart contract invocations.
+- `ScVal` builder utilities (`ScVal.Address`, `ScVal.i128`, `ScVal.u64`, `ScVal.Bytes`, `ScVal.Vec`, `ScVal.Map`, etc.) for type-safe argument construction.
+- `sorobanUrl` parameter in `TxBuilderOptions` (required for Soroban transactions).
+- Automatic transaction fee and footprint simulation via `SorobanRpc.Server.prepareTransaction()` during `build()`.
+
+---
+
 ## [0.3.0] — 2025-06-01
 
 ### Added

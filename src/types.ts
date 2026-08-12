@@ -1,4 +1,4 @@
-import type { Keypair, Networks } from '@stellar/stellar-sdk';
+import type { Keypair, Networks, xdr } from '@stellar/stellar-sdk';
 
 /**
  * Supported Stellar network passphrases
@@ -13,6 +13,7 @@ export interface TxBuilderOptions {
   network: 'mainnet' | 'testnet' | 'futurenet';
   fee?: string; // base fee in stroops, default '100'
   horizonUrl?: string; // override default Horizon endpoint
+  sorobanUrl?: string; // required for Soroban contract invocations
   timeout?: number; // request timeout in ms
 }
 
@@ -116,6 +117,7 @@ export interface InvokeContractParams {
     | boolean
     | { address: string }
     | { amount: string; asset: { code: string; issuer: string } | 'XLM' }
+    | xdr.ScVal
   )[];
 }
 

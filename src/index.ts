@@ -1,4 +1,5 @@
 export { TxBuilder } from './TxBuilder';
+export { ScVal } from './soroban';
 export type {
   TxBuilderOptions,
   PaymentParams,

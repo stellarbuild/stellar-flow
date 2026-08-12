@@ -29,6 +29,12 @@ jest.mock('@stellar/stellar-sdk', () => {
         }),
       })),
     },
+    rpc: {
+      ...actual.rpc,
+      Server: jest.fn().mockImplementation(() => ({
+        prepareTransaction: jest.fn().mockImplementation(async (tx: any) => tx),
+      })),
+    },
   };
 });
 
@@ -666,13 +672,25 @@ describe('addManageData()', () => {
 });
 
 describe('invokeContract()', () => {
-  it('validates contract ID format then throws not implemented', () => {
-    expect(() =>
-      builder().invokeContract({
+  it('chains correctly with valid inputs', () => {
+    const b = builder();
+    expect(
+      b.invokeContract({
         contractId: DEST,
         functionName: 'hello',
       }),
-    ).toThrow('not yet fully implemented');
+    ).toBe(b);
+  });
+
+  it('accepts arguments array', () => {
+    const b = builder();
+    expect(
+      b.invokeContract({
+        contractId: DEST,
+        functionName: 'hello',
+        args: ['world', 123, true, { address: DEST }],
+      }),
+    ).toBe(b);
   });
 
   it('throws on empty contract ID', () => {
@@ -818,7 +836,22 @@ describe('setTimebounds()', () => {
 
 describe('build()', () => {
   it('throws when no operations have been added', async () => {
-    await expect(builder().build()).rejects.toThrow('no operations');
+    const b = builder();
+    await expect(b.build()).rejects.toThrow('Cannot build a transaction with no operations');
+  });
+
+  it('throws if sorobanUrl is missing for invokeContract', async () => {
+    const b = builder().invokeContract({ contractId: DEST, functionName: 'hello' });
+    await expect(b.build()).rejects.toThrow('sorobanUrl is required');
+  });
+
+  it('calls prepareTransaction for invokeContract', async () => {
+    const b = TxBuilder.for(MOCK_SOURCE, {
+      network: 'testnet',
+      sorobanUrl: 'http://localhost:8000',
+    }).invokeContract({ contractId: DEST, functionName: 'hello' });
+    const built = await b.build();
+    expect(built.xdr).toBeDefined();
   });
 
   it('resolves with a BuiltTransaction containing valid XDR', async () => {

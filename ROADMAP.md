@@ -53,10 +53,10 @@ To propose an addition to the roadmap, open a
 ### v0.4.0 — Soroban Support
 Target: Q3 2025
 
-- 📋 Full `invokeContract()` implementation using `Operation.invokeHostFunction`
-- 📋 Soroban argument type helpers: `ScVal` builder utilities for `Address`, `i128`, `u64`, `Bytes`, `Vec`, `Map`
-- 📋 Soroban transaction fee simulation via `SorobanRpc.Server`
-- 📋 `SorobanServer` configuration option in `TxBuilderOptions`
+- ✅ Full `invokeContract()` implementation using `Operation.invokeHostFunction`
+- ✅ Soroban argument type helpers: `ScVal` builder utilities for `Address`, `i128`, `u64`, `Bytes`, `Vec`, `Map`
+- ✅ Soroban transaction fee simulation via `SorobanRpc.Server`
+- ✅ `sorobanUrl` configuration option in `TxBuilderOptions`
 
 ### v0.5.0 — Additional Classic Operations
 Target: Q4 2025

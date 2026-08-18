@@ -1,9 +1,9 @@
-# stellar-tx-builder
+# stellar-flow
 
 <div align="center">
 
-[![npm version](https://img.shields.io/npm/v/@stellarbuild/stellar-tx-builder.svg?style=flat-square)](https://www.npmjs.com/package/@stellarbuild/stellar-tx-builder)
-[![CI](https://github.com/stellarbuild/stellar-tx-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/stellarbuild/stellar-tx-builder/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@stellarbuild/stellar-flow.svg?style=flat-square)](https://www.npmjs.com/package/@stellarbuild/stellar-flow)
+[![CI](https://github.com/stellarbuild/stellar-flow/actions/workflows/ci.yml/badge.svg)](https://github.com/stellarbuild/stellar-flow/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Stellar SDK](https://img.shields.io/badge/Stellar%20SDK-%3E%3D12-blueviolet?style=flat-square)](https://github.com/stellar/js-stellar-sdk)
@@ -18,7 +18,7 @@
 
 ## Table of Contents
 
-- [Why stellar-tx-builder Exists](#why-stellar-tx-builder-exists)
+- [Why stellar-flow Exists](#why-stellar-flow-exists)
 - [How It Works](#how-it-works)
 - [Architecture Overview](#architecture-overview)
 - [Key Features](#key-features)
@@ -39,7 +39,7 @@
 
 ---
 
-## Why stellar-tx-builder Exists
+## Why stellar-flow Exists
 
 Building Stellar transactions with the official `@stellar/stellar-sdk` requires developers to manually:
 
@@ -51,7 +51,7 @@ Building Stellar transactions with the official `@stellar/stellar-sdk` requires 
 
 This is correct and powerful, but verbose. For teams building products on Stellar — wallets, exchanges, payment rails, DeFi applications — the boilerplate accumulates and becomes a source of mistakes.
 
-**`stellar-tx-builder` wraps the Stellar SDK in a fluent, chainable builder API** that handles the repetitive scaffolding while staying transparently thin over the SDK. It does not re-implement Stellar primitives — it composes them.
+**`stellar-flow` wraps the Stellar SDK in a fluent, chainable builder API** that handles the repetitive scaffolding while staying transparently thin over the SDK. It does not re-implement Stellar primitives — it composes them.
 
 ---
 
@@ -127,13 +127,13 @@ See [docs/architecture.md](docs/architecture.md) for a detailed breakdown.
 
 ```bash
 # npm
-npm install @stellarbuild/stellar-tx-builder
+npm install @stellarbuild/stellar-flow
 
 # yarn
-yarn add @stellarbuild/stellar-tx-builder
+yarn add @stellarbuild/stellar-flow
 
 # pnpm
-pnpm add @stellarbuild/stellar-tx-builder
+pnpm add @stellarbuild/stellar-flow
 ```
 
 **Peer dependency** — you must also have the Stellar SDK installed:
@@ -151,7 +151,7 @@ See [docs/installation.md](docs/installation.md) for advanced setup, ESM configu
 ## Quick Start
 
 ```typescript
-import { TxBuilder } from '@stellarbuild/stellar-tx-builder';
+import { TxBuilder } from '@stellarbuild/stellar-flow';
 import { Keypair } from '@stellar/stellar-sdk';
 
 const sourceKeypair = Keypair.fromSecret('SCZANGBA5RLPKD2EPQNZJ4QPIMESUHW26IUSQQ7VFXZ4HNPNGJXS23');
@@ -247,7 +247,7 @@ const tx = await TxBuilder.for(keypair, { network: 'mainnet' })
 ### Invoke a Soroban Contract
 
 ```typescript
-import { ScVal } from '@stellarbuild/stellar-tx-builder';
+import { ScVal } from '@stellarbuild/stellar-flow';
 
 const tx = await TxBuilder.for(keypair, { 
   network: 'testnet',
@@ -359,7 +359,7 @@ import type {
   TimeboundParams,
   BuiltTransaction,
   SubmitResult,
-} from '@stellarbuild/stellar-tx-builder';
+} from '@stellarbuild/stellar-flow';
 ```
 
 ---
@@ -368,8 +368,8 @@ import type {
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/stellarbuild/stellar-tx-builder.git
-cd stellar-tx-builder
+git clone https://github.com/stellarbuild/stellar-flow.git
+cd stellar-flow
 
 # 2. Install dependencies
 npm install
@@ -397,7 +397,7 @@ See [docs/development.md](docs/development.md) for a complete local development 
 ## Repository Structure
 
 ```
-stellar-tx-builder/
+stellar-flow/
 ├── src/
 │   ├── TxBuilder.ts        # Core builder class
 │   ├── types.ts            # All TypeScript interfaces
@@ -441,7 +441,7 @@ stellar-tx-builder/
 
 ## Security
 
-`stellar-tx-builder` is a **transaction construction library** — it does not transmit, store, or manage private keys. Private key handling is the responsibility of the caller.
+`stellar-flow` is a **transaction construction library** — it does not transmit, store, or manage private keys. Private key handling is the responsibility of the caller.
 
 To report a security vulnerability, please follow our [Security Policy](SECURITY.md). Do **not** open a public GitHub issue for security concerns.
 
@@ -488,4 +488,4 @@ See [FAQ.md](FAQ.md) for answers to common questions.
 
 - [Stellar Development Foundation](https://stellar.org) for the Stellar network and JavaScript SDK
 - The [Stellar Ecosystem Proposals](https://github.com/stellar/stellar-protocol/tree/master/ecosystem) community
-- All [contributors](https://github.com/stellarbuild/stellar-tx-builder/graphs/contributors) who have improved this library
+- All [contributors](https://github.com/stellarbuild/stellar-flow/graphs/contributors) who have improved this library

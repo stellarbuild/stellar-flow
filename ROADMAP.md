@@ -1,11 +1,11 @@
 # Roadmap
 
-This document outlines the planned direction for `stellar-tx-builder`. It is a
+This document outlines the planned direction for `stellar-flow`. It is a
 living document — items may be added, reprioritised, or removed based on
 community feedback, Stellar protocol changes, and maintainer capacity.
 
 To propose an addition to the roadmap, open a
-[Feature Request](https://github.com/stellarbuild/stellar-tx-builder/issues/new?template=feature_request.yml).
+[Feature Request](https://github.com/stellarbuild/stellar-flow/issues/new?template=feature_request.yml).
 
 ---
 
@@ -112,6 +112,6 @@ Target: Q3 2026
 
 ## How to Influence the Roadmap
 
-1. Open a [Feature Request](https://github.com/stellarbuild/stellar-tx-builder/issues/new?template=feature_request.yml) describing your use case.
-2. Participate in [GitHub Discussions](https://github.com/stellarbuild/stellar-tx-builder/discussions) to share your priorities.
+1. Open a [Feature Request](https://github.com/stellarbuild/stellar-flow/issues/new?template=feature_request.yml) describing your use case.
+2. Participate in [GitHub Discussions](https://github.com/stellarbuild/stellar-flow/discussions) to share your priorities.
 3. Submit a pull request — working implementations are the most effective way to accelerate roadmap items.

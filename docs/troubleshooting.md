@@ -1,19 +1,19 @@
 # Troubleshooting
 
-This guide lists common errors encountered when using `stellar-tx-builder` and
+This guide lists common errors encountered when using `stellar-flow` and
 how to resolve them.
 
 ---
 
 ## Build Errors
 
-### `Cannot find module '@stellarbuild/stellar-tx-builder'`
+### `Cannot find module '@stellarbuild/stellar-flow'`
 
 **Cause:** The package is not installed.
 
 **Fix:**
 ```bash
-npm install @stellarbuild/stellar-tx-builder @stellar/stellar-sdk
+npm install @stellarbuild/stellar-flow @stellar/stellar-sdk
 ```
 
 ---
@@ -245,6 +245,6 @@ directly. See [FAQ.md](../FAQ.md) for an example.
 
 If your issue is not listed here:
 
-1. Search [existing GitHub issues](https://github.com/stellarbuild/stellar-tx-builder/issues).
-2. Ask in [GitHub Discussions](https://github.com/stellarbuild/stellar-tx-builder/discussions).
-3. Include your `stellar-tx-builder` version, `@stellar/stellar-sdk` version, Node.js version, and a minimal reproduction.
+1. Search [existing GitHub issues](https://github.com/stellarbuild/stellar-flow/issues).
+2. Ask in [GitHub Discussions](https://github.com/stellarbuild/stellar-flow/discussions).
+3. Include your `stellar-flow` version, `@stellar/stellar-sdk` version, Node.js version, and a minimal reproduction.

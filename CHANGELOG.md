@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `@stellarbuild/stellar-tx-builder` are documented in
+All notable changes to `@stellarbuild/stellar-flow` are documented in
 this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
@@ -112,7 +112,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Full TypeScript declarations
 - Unit test suite with Horizon mock
 
-[Unreleased]: https://github.com/stellarbuild/stellar-tx-builder/compare/v0.3.0...HEAD
-[0.3.0]: https://github.com/stellarbuild/stellar-tx-builder/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/stellarbuild/stellar-tx-builder/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/stellarbuild/stellar-tx-builder/releases/tag/v0.1.0
+[Unreleased]: https://github.com/stellarbuild/stellar-flow/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/stellarbuild/stellar-flow/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/stellarbuild/stellar-flow/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/stellarbuild/stellar-flow/releases/tag/v0.1.0

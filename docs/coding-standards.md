@@ -1,7 +1,7 @@
 # Coding Standards
 
 This document defines the code style, conventions, and quality standards for
-`stellar-tx-builder`. All contributors are expected to follow these guidelines.
+`stellar-flow`. All contributors are expected to follow these guidelines.
 The linter and formatter enforce the majority of these rules automatically.
 
 ---

@@ -254,7 +254,7 @@ const tx = new Transaction(xdr, Networks.TESTNET);
 // Sign and submit using the Stellar SDK
 ```
 
-`stellar-tx-builder` does not yet provide a `fromXDR()` factory. This is
+`stellar-flow` does not yet provide a `fromXDR()` factory. This is
 planned for v0.7.0. See [ROADMAP.md](../ROADMAP.md).
 
 ---

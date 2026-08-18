@@ -1,7 +1,7 @@
 # Design Decisions
 
 This document records significant architectural and API design decisions made
-in `stellar-tx-builder`, along with the context, alternatives considered, and
+in `stellar-flow`, along with the context, alternatives considered, and
 rationale. New decisions should be added here as Architecture Decision Records
 (ADRs).
 

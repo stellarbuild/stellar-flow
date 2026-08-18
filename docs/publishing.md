@@ -1,6 +1,6 @@
 # Publishing Runbook
 
-This document describes the release process for `@stellarbuild/stellar-tx-builder`.
+This document describes the release process for `@stellarbuild/stellar-flow`.
 It is intended for maintainers with npm publish access.
 
 ---
@@ -102,17 +102,17 @@ Pushing the tag triggers the `release.yml` GitHub Actions workflow which:
 5. Creates a GitHub Release with auto-generated release notes
 
 Monitor the workflow at:
-`https://github.com/stellarbuild/stellar-tx-builder/actions/workflows/release.yml`
+`https://github.com/stellarbuild/stellar-flow/actions/workflows/release.yml`
 
 ### Step 7: Verify the release
 
 ```bash
 # Verify the package is published
-npm view @stellarbuild/stellar-tx-builder versions --json
+npm view @stellarbuild/stellar-flow versions --json
 
 # Install and test the published version
-npm install @stellarbuild/stellar-tx-builder@0.4.0
-node -e "const { TxBuilder } = require('@stellarbuild/stellar-tx-builder'); console.log(typeof TxBuilder);"
+npm install @stellarbuild/stellar-flow@0.4.0
+node -e "const { TxBuilder } = require('@stellarbuild/stellar-flow'); console.log(typeof TxBuilder);"
 ```
 
 ---
@@ -134,9 +134,9 @@ and marks them as pre-release on GitHub.
 To install a pre-release version:
 
 ```bash
-npm install @stellarbuild/stellar-tx-builder@0.4.0-beta.1
+npm install @stellarbuild/stellar-flow@0.4.0-beta.1
 # or
-npm install @stellarbuild/stellar-tx-builder@beta
+npm install @stellarbuild/stellar-flow@beta
 ```
 
 ---
@@ -149,7 +149,7 @@ is accidentally published:
 1. Immediately publish a patch version with the fix.
 2. Deprecate the broken version:
    ```bash
-   npm deprecate @stellarbuild/stellar-tx-builder@0.4.0 "Critical bug — please upgrade to 0.4.1"
+   npm deprecate @stellarbuild/stellar-flow@0.4.0 "Critical bug — please upgrade to 0.4.1"
    ```
 
 ---

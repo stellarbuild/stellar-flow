@@ -1,7 +1,7 @@
 # API Reference
 
 Complete reference for all public classes, methods, and types exported by
-`@stellarbuild/stellar-tx-builder`.
+`@stellarbuild/stellar-flow`.
 
 ---
 
@@ -26,7 +26,7 @@ import {
   BuiltTransaction,
   SubmitResult,
   NetworkPassphrase,
-} from '@stellarbuild/stellar-tx-builder';
+} from '@stellarbuild/stellar-flow';
 ```
 
 ---
@@ -51,7 +51,7 @@ static for(keypair: Keypair, options: TxBuilderOptions): TxBuilder
 **Example:**
 ```typescript
 import { Keypair } from '@stellar/stellar-sdk';
-import { TxBuilder } from '@stellarbuild/stellar-tx-builder';
+import { TxBuilder } from '@stellarbuild/stellar-flow';
 
 const keypair = Keypair.fromSecret('S...');
 const builder = TxBuilder.for(keypair, { network: 'testnet' });

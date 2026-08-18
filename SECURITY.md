@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Only the latest published version of `@stellarbuild/stellar-tx-builder`
+Only the latest published version of `@stellarbuild/stellar-flow`
 receives security fixes. All users are encouraged to stay up to date with the
 latest release.
 
@@ -15,7 +15,7 @@ latest release.
 
 ## Scope
 
-`stellar-tx-builder` is a **client-side transaction construction library**. It
+`stellar-flow` is a **client-side transaction construction library**. It
 does not:
 
 - Store, transmit, or manage private keys on your behalf
@@ -52,7 +52,7 @@ vulnerability.**
 Use GitHub's built-in private reporting feature, which keeps the report
 private to the maintainer until a fix is ready:
 
-1. Go to the [Security tab](https://github.com/stellarbuild/stellar-tx-builder/security)
+1. Go to the [Security tab](https://github.com/stellarbuild/stellar-flow/security)
    of this repository.
 2. Click **"Report a vulnerability"**.
 3. Fill in the report form with as much detail as possible, including:
@@ -95,7 +95,7 @@ responsibly disclose security vulnerabilities in accordance with this policy.
 
 ## Security Best Practices for Consumers
 
-When using `stellar-tx-builder`:
+When using `stellar-flow`:
 
 - **Never log or expose keypairs** or secret seeds in your application code.
 - **Always validate recipient addresses** in your application layer before

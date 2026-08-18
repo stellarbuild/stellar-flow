@@ -69,7 +69,7 @@ in your browser for a detailed line-by-line coverage view.
 
 ## Mocking Strategy
 
-`stellar-tx-builder` tests use **Jest module mocking** to intercept all
+`stellar-flow` tests use **Jest module mocking** to intercept all
 `@stellar/stellar-sdk` Horizon network calls. This ensures:
 
 - Tests are **fast** (no real network requests)

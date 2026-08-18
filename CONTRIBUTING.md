@@ -1,6 +1,6 @@
-# Contributing to stellar-tx-builder
+# Contributing to stellar-flow
 
-Thank you for your interest in contributing to `stellar-tx-builder`. This guide covers everything you need to get from zero to a merged pull request.
+Thank you for your interest in contributing to `stellar-flow`. This guide covers everything you need to get from zero to a merged pull request.
 
 ---
 
@@ -24,7 +24,7 @@ Thank you for your interest in contributing to `stellar-tx-builder`. This guide 
 
 This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold these standards. Please report unacceptable behaviour via the maintainer's
 [GitHub profile](https://github.com/T-kesh) or the repository's
-[Security tab](https://github.com/stellarbuild/stellar-tx-builder/security).
+[Security tab](https://github.com/stellarbuild/stellar-flow/security).
 
 ---
 
@@ -34,12 +34,12 @@ You do not need to write code to make a meaningful contribution:
 
 | Type | How |
 |---|---|
-| 🐛 Report a bug | Open a [Bug Report](https://github.com/stellarbuild/stellar-tx-builder/issues/new?template=bug_report.yml) |
-| 🚀 Suggest a feature | Open a [Feature Request](https://github.com/stellarbuild/stellar-tx-builder/issues/new?template=feature_request.yml) |
-| 📚 Improve docs | Open a [Documentation Issue](https://github.com/stellarbuild/stellar-tx-builder/issues/new?template=documentation_issue.yml) or a PR |
+| 🐛 Report a bug | Open a [Bug Report](https://github.com/stellarbuild/stellar-flow/issues/new?template=bug_report.yml) |
+| 🚀 Suggest a feature | Open a [Feature Request](https://github.com/stellarbuild/stellar-flow/issues/new?template=feature_request.yml) |
+| 📚 Improve docs | Open a [Documentation Issue](https://github.com/stellarbuild/stellar-flow/issues/new?template=documentation_issue.yml) or a PR |
 | 🔧 Fix a bug | Assign yourself to an open issue and submit a PR |
 | ✅ Write tests | Improve test coverage for untested edge cases |
-| 💬 Answer questions | Help others in [GitHub Discussions](https://github.com/stellarbuild/stellar-tx-builder/discussions) |
+| 💬 Answer questions | Help others in [GitHub Discussions](https://github.com/stellarbuild/stellar-flow/discussions) |
 
 ---
 
@@ -57,11 +57,11 @@ You do not need to write code to make a meaningful contribution:
 
 ```bash
 # 1. Fork the repository on GitHub, then clone your fork
-git clone https://github.com/<your-username>/stellar-tx-builder.git
-cd stellar-tx-builder
+git clone https://github.com/<your-username>/stellar-flow.git
+cd stellar-flow
 
 # 2. Add the upstream remote
-git remote add upstream https://github.com/stellarbuild/stellar-tx-builder.git
+git remote add upstream https://github.com/stellarbuild/stellar-flow.git
 
 # 3. Install dependencies
 npm install

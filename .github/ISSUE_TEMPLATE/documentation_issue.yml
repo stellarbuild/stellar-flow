@@ -46,7 +46,7 @@ body:
     attributes:
       label: Location
       description: Link to the specific file, section, or line number.
-      placeholder: "https://github.com/stellarbuild/stellar-tx-builder/blob/main/docs/api.md#L42"
+      placeholder: "https://github.com/stellarbuild/stellar-flow/blob/main/docs/api.md#L42"
 
   - type: textarea
     id: description

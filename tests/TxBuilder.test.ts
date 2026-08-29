@@ -940,3 +940,26 @@ describe('fluent chain (end-to-end)', () => {
     expect(result.hash).toBeTruthy();
   });
 });
+
+describe('describe()', () => {
+  it('returns a plain-object representation of the builder state', () => {
+    const b = builder()
+      .setMemo('hello')
+      .setTimebounds({ minTime: 1000, maxTime: 2000 })
+      .addPayment({ destination: DEST, amount: '10', asset: 'XLM' })
+      .addCreateAccount({ destination: DEST, startingBalance: '5' });
+
+    const desc = b.describe();
+
+    expect(desc.network).toBe('testnet');
+    expect(desc.source).toBe(MOCK_SOURCE.publicKey());
+    expect(desc.fee).toBe('100');
+    expect(desc.memo).toBe('hello');
+    expect(desc.timebounds).toEqual({ minTime: 1000, maxTime: 2000 });
+    expect(desc.operations).toHaveLength(2);
+    expect(desc.operations[0].type).toBe('payment');
+    expect(desc.operations[0].params).toEqual({ destination: DEST, amount: '10', asset: 'XLM' });
+    expect(desc.operations[1].type).toBe('createAccount');
+    expect(desc.operations[1].params).toEqual({ destination: DEST, startingBalance: '5' });
+  });
+});

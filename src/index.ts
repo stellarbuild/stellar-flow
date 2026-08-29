@@ -1,5 +1,6 @@
 export { TxBuilder } from './TxBuilder';
 export { ScVal } from './soroban';
+export { TxBuilderValidationError, TxBuilderNetworkError, TxBuilderSubmitError } from './errors';
 export type {
   TxBuilderOptions,
   PaymentParams,
@@ -14,4 +15,6 @@ export type {
   TimeboundParams,
   BuiltTransaction,
   SubmitResult,
+  TxDescription,
+  OperationDescription,
 } from './types';

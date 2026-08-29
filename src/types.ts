@@ -130,6 +130,35 @@ export interface TimeboundParams {
 }
 
 /**
+ * A description of an operation added to the builder
+ */
+export interface OperationDescription {
+  type: string;
+  params:
+    | PaymentParams
+    | CreateAccountParams
+    | ChangeTrustParams
+    | ManageOfferParams
+    | ManageBuyOfferParams
+    | PathPaymentParams
+    | SetOptionsParams
+    | ManageDataParams
+    | InvokeContractParams;
+}
+
+/**
+ * A plain-object representation of the builder's current state
+ */
+export interface TxDescription {
+  network: string;
+  source: string;
+  fee: string;
+  memo?: string;
+  timebounds?: { minTime: number; maxTime: number };
+  operations: OperationDescription[];
+}
+
+/**
  * A built transaction ready for signing and submission
  */
 export interface BuiltTransaction {

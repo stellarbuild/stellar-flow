@@ -28,7 +28,10 @@ import type {
   BuiltTransaction,
   SubmitResult,
   NetworkPassphrase,
+  TxDescription,
+  OperationDescription,
 } from './types';
+import { TxBuilderValidationError, TxBuilderNetworkError, TxBuilderSubmitError } from './errors';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -60,16 +63,28 @@ function resolveAsset(asset: 'XLM' | { code: string; issuer: string }): Asset {
   if (asset === 'XLM') return Asset.native();
 
   if (!asset.code || typeof asset.code !== 'string') {
-    throw new Error('Asset code must be a non-empty string');
+    throw new TxBuilderValidationError(
+      'Asset code must be a non-empty string',
+      'asset.code',
+      asset.code,
+    );
   }
   if (!asset.issuer || typeof asset.issuer !== 'string') {
-    throw new Error('Asset issuer must be a non-empty string');
+    throw new TxBuilderValidationError(
+      'Asset issuer must be a non-empty string',
+      'asset.issuer',
+      asset.issuer,
+    );
   }
 
   try {
     return new Asset(asset.code, asset.issuer);
   } catch (error) {
-    throw new Error(`Invalid asset: code="${asset.code}", issuer="${asset.issuer}"`);
+    throw new TxBuilderValidationError(
+      `Invalid asset: code="${asset.code}", issuer="${asset.issuer}"`,
+      'asset',
+      asset,
+    );
   }
 }
 
@@ -86,7 +101,11 @@ function resolvePrice(price: ManageOfferParams['price'] | ManageBuyOfferParams['
   if (typeof price === 'string') {
     const n = parseFloat(price);
     if (isNaN(n) || n <= 0) {
-      throw new Error(`Invalid price: "${price}" must be a positive number`);
+      throw new TxBuilderValidationError(
+        `Invalid price: "${price}" must be a positive number`,
+        'price',
+        price,
+      );
     }
     // Convert decimal to fraction with denominator 1 for simplicity
     // Stellar SDK will handle the conversion internally
@@ -95,12 +114,20 @@ function resolvePrice(price: ManageOfferParams['price'] | ManageBuyOfferParams['
 
   if (typeof price === 'object' && price.n !== undefined && price.d !== undefined) {
     if (price.n <= 0 || price.d <= 0) {
-      throw new Error(`Invalid price fraction: numerator and denominator must be positive`);
+      throw new TxBuilderValidationError(
+        `Invalid price fraction: numerator and denominator must be positive`,
+        'price',
+        price,
+      );
     }
     return { n: price.n, d: price.d };
   }
 
-  throw new Error(`Invalid price format: must be a string or {n, d} object`);
+  throw new TxBuilderValidationError(
+    `Invalid price format: must be a string or {n, d} object`,
+    'price',
+    price,
+  );
 }
 
 /**
@@ -121,7 +148,8 @@ function parseRelativeTime(value: string | number): number {
   }
 
   const parsed = Math.floor(new Date(value).getTime() / 1000);
-  if (isNaN(parsed)) throw new Error(`Invalid time value: "${value}"`);
+  if (isNaN(parsed))
+    throw new TxBuilderValidationError(`Invalid time value: "${value}"`, 'time', value);
   return parsed;
 }
 
@@ -133,13 +161,15 @@ function parseRelativeTime(value: string | number): number {
  */
 function validateAddress(address: string, label: string): void {
   if (!address || typeof address !== 'string') {
-    throw new Error(`${label} must be a non-empty string`);
+    throw new TxBuilderValidationError(`${label} must be a non-empty string`, label, address);
   }
   try {
     Keypair.fromPublicKey(address);
   } catch {
-    throw new Error(
+    throw new TxBuilderValidationError(
       `Invalid Stellar address for ${label}: "${address}". Expected a valid public key starting with 'G'.`,
+      label,
+      address,
     );
   }
 }
@@ -152,14 +182,22 @@ function validateAddress(address: string, label: string): void {
  */
 function validateAmount(amount: string, label: string): void {
   if (!amount || typeof amount !== 'string') {
-    throw new Error(`${label} must be a non-empty string`);
+    throw new TxBuilderValidationError(`${label} must be a non-empty string`, label, amount);
   }
   const n = parseFloat(amount);
   if (isNaN(n)) {
-    throw new Error(`Invalid amount for ${label}: "${amount}" is not a valid number`);
+    throw new TxBuilderValidationError(
+      `Invalid amount for ${label}: "${amount}" is not a valid number`,
+      label,
+      amount,
+    );
   }
   if (n <= 0) {
-    throw new Error(`Invalid amount for ${label}: "${amount}" must be greater than 0`);
+    throw new TxBuilderValidationError(
+      `Invalid amount for ${label}: "${amount}" must be greater than 0`,
+      label,
+      amount,
+    );
   }
 }
 
@@ -205,13 +243,23 @@ class BuiltTransactionImpl implements BuiltTransaction {
    * @throws Error if submission fails
    */
   async submit(): Promise<SubmitResult> {
-    const response = await this.server.submitTransaction(this.tx);
-    return {
-      hash: response.hash,
-      ledger: response.ledger,
-      successful: response.successful,
-      resultXdr: response.result_xdr,
-    };
+    try {
+      const response = await this.server.submitTransaction(this.tx);
+      return {
+        hash: response.hash,
+        ledger: response.ledger,
+        successful: response.successful,
+        resultXdr: response.result_xdr,
+      };
+    } catch (e: any) {
+      if (e.response?.data?.extras?.result_codes) {
+        throw new TxBuilderSubmitError(
+          e.message || 'Transaction submission failed',
+          e.response.data.extras.result_codes,
+        );
+      }
+      throw new TxBuilderNetworkError(e.message || 'Network error during submission');
+    }
   }
 }
 
@@ -226,6 +274,7 @@ export class TxBuilder {
   private keypair: Keypair;
   private options: TxBuilderOptions;
   private operations: xdr.Operation[] = [];
+  private descriptors: OperationDescription[] = [];
   private memo?: Memo;
   private timebounds?: { minTime: number; maxTime: number };
   private feeBumpSource?: string;
@@ -265,6 +314,7 @@ export class TxBuilder {
         amount: params.amount,
       }),
     );
+    this.descriptors.push({ type: 'payment', params });
 
     if (params.memo) this.memo = Memo.text(params.memo);
     return this;
@@ -286,6 +336,7 @@ export class TxBuilder {
         startingBalance: params.startingBalance,
       }),
     );
+    this.descriptors.push({ type: 'createAccount', params });
     return this;
   }
 
@@ -302,6 +353,7 @@ export class TxBuilder {
         ...(params.limit !== undefined ? { limit: params.limit } : {}),
       }),
     );
+    this.descriptors.push({ type: 'changeTrust', params });
     return this;
   }
 
@@ -327,6 +379,7 @@ export class TxBuilder {
         offerId: params.offerId || '0',
       }),
     );
+    this.descriptors.push({ type: 'manageSellOffer', params });
     return this;
   }
 
@@ -352,6 +405,7 @@ export class TxBuilder {
         offerId: params.offerId || '0',
       }),
     );
+    this.descriptors.push({ type: 'manageBuyOffer', params });
     return this;
   }
 
@@ -380,6 +434,7 @@ export class TxBuilder {
         path,
       }),
     );
+    this.descriptors.push({ type: 'pathPaymentStrictSend', params });
     return this;
   }
 
@@ -407,42 +462,66 @@ export class TxBuilder {
 
     if (params.masterWeight !== undefined) {
       if (params.masterWeight < 0 || params.masterWeight > 255) {
-        throw new Error('Master weight must be between 0 and 255');
+        throw new TxBuilderValidationError(
+          'Master weight must be between 0 and 255',
+          'masterWeight',
+          params.masterWeight,
+        );
       }
       operationParams.masterWeight = params.masterWeight;
     }
 
     if (params.lowThreshold !== undefined) {
       if (params.lowThreshold < 0 || params.lowThreshold > 255) {
-        throw new Error('Low threshold must be between 0 and 255');
+        throw new TxBuilderValidationError(
+          'Low threshold must be between 0 and 255',
+          'lowThreshold',
+          params.lowThreshold,
+        );
       }
       operationParams.lowThreshold = params.lowThreshold;
     }
 
     if (params.medThreshold !== undefined) {
       if (params.medThreshold < 0 || params.medThreshold > 255) {
-        throw new Error('Medium threshold must be between 0 and 255');
+        throw new TxBuilderValidationError(
+          'Medium threshold must be between 0 and 255',
+          'medThreshold',
+          params.medThreshold,
+        );
       }
       operationParams.medThreshold = params.medThreshold;
     }
 
     if (params.highThreshold !== undefined) {
       if (params.highThreshold < 0 || params.highThreshold > 255) {
-        throw new Error('High threshold must be between 0 and 255');
+        throw new TxBuilderValidationError(
+          'High threshold must be between 0 and 255',
+          'highThreshold',
+          params.highThreshold,
+        );
       }
       operationParams.highThreshold = params.highThreshold;
     }
 
     if (params.homeDomain !== undefined) {
       if (params.homeDomain.length > 32) {
-        throw new Error('Home domain must be 32 characters or fewer');
+        throw new TxBuilderValidationError(
+          'Home domain must be 32 characters or fewer',
+          'homeDomain',
+          params.homeDomain,
+        );
       }
       operationParams.homeDomain = params.homeDomain;
     }
 
     if (params.signer !== undefined) {
       if (params.signer.weight < 0 || params.signer.weight > 255) {
-        throw new Error('Signer weight must be between 0 and 255');
+        throw new TxBuilderValidationError(
+          'Signer weight must be between 0 and 255',
+          'signer.weight',
+          params.signer.weight,
+        );
       }
 
       const signer: Record<string, unknown> = { weight: params.signer.weight };
@@ -453,7 +532,11 @@ export class TxBuilder {
       } else if (params.signer.sha256Hash) {
         if (typeof params.signer.sha256Hash === 'string') {
           if (params.signer.sha256Hash.length !== 64) {
-            throw new Error('SHA256 hash must be 64 hex characters (32 bytes)');
+            throw new TxBuilderValidationError(
+              'SHA256 hash must be 64 hex characters (32 bytes)',
+              'signer.sha256Hash',
+              params.signer.sha256Hash,
+            );
           }
           signer.sha256Hash = Buffer.from(params.signer.sha256Hash, 'hex');
         } else {
@@ -462,20 +545,29 @@ export class TxBuilder {
       } else if (params.signer.preAuthTx) {
         if (typeof params.signer.preAuthTx === 'string') {
           if (params.signer.preAuthTx.length !== 64) {
-            throw new Error('PreAuthTx must be 64 hex characters (32 bytes)');
+            throw new TxBuilderValidationError(
+              'PreAuthTx must be 64 hex characters (32 bytes)',
+              'signer.preAuthTx',
+              params.signer.preAuthTx,
+            );
           }
           signer.preAuthTx = Buffer.from(params.signer.preAuthTx, 'hex');
         } else {
           signer.preAuthTx = params.signer.preAuthTx;
         }
       } else {
-        throw new Error('Signer must specify one of: ed25519PublicKey, sha256Hash, or preAuthTx');
+        throw new TxBuilderValidationError(
+          'Signer must specify one of: ed25519PublicKey, sha256Hash, or preAuthTx',
+          'signer',
+          params.signer,
+        );
       }
 
       operationParams.signer = signer;
     }
 
     this.operations.push(Operation.setOptions(operationParams));
+    this.descriptors.push({ type: 'setOptions', params });
     return this;
   }
 
@@ -487,22 +579,34 @@ export class TxBuilder {
    */
   addManageData(params: ManageDataParams): this {
     if (!params.name || typeof params.name !== 'string') {
-      throw new Error('Data name must be a non-empty string');
+      throw new TxBuilderValidationError(
+        'Data name must be a non-empty string',
+        'name',
+        params.name,
+      );
     }
 
     const nameBytes = Buffer.byteLength(params.name, 'utf8');
     if (nameBytes > 64) {
-      throw new Error(`Data name exceeds 64-byte limit (${nameBytes} bytes)`);
+      throw new TxBuilderValidationError(
+        `Data name exceeds 64-byte limit (${nameBytes} bytes)`,
+        'name',
+        params.name,
+      );
     }
 
     if (params.value !== undefined && params.value !== null) {
       if (typeof params.value !== 'string') {
-        throw new Error('Data value must be a string');
+        throw new TxBuilderValidationError('Data value must be a string', 'value', params.value);
       }
 
       const valueBytes = Buffer.byteLength(params.value, 'utf8');
       if (valueBytes > 64) {
-        throw new Error(`Data value exceeds 64-byte limit (${valueBytes} bytes)`);
+        throw new TxBuilderValidationError(
+          `Data value exceeds 64-byte limit (${valueBytes} bytes)`,
+          'value',
+          params.value,
+        );
       }
     }
 
@@ -512,6 +616,7 @@ export class TxBuilder {
         value: params.value,
       }),
     );
+    this.descriptors.push({ type: 'manageData', params });
     return this;
   }
 
@@ -525,18 +630,30 @@ export class TxBuilder {
    */
   invokeContract(params: InvokeContractParams): this {
     if (!params.contractId || typeof params.contractId !== 'string') {
-      throw new Error('Contract ID must be a non-empty string');
+      throw new TxBuilderValidationError(
+        'Contract ID must be a non-empty string',
+        'contractId',
+        params.contractId,
+      );
     }
 
     if (!params.functionName || typeof params.functionName !== 'string') {
-      throw new Error('Function name must be a non-empty string');
+      throw new TxBuilderValidationError(
+        'Function name must be a non-empty string',
+        'functionName',
+        params.functionName,
+      );
     }
 
     let contractAddress: Address;
     try {
       contractAddress = new Address(params.contractId);
     } catch (error) {
-      throw new Error('Invalid contract ID format');
+      throw new TxBuilderValidationError(
+        'Invalid contract ID format',
+        'contractId',
+        params.contractId,
+      );
     }
 
     let scValArgs: xdr.ScVal[] = [];
@@ -565,6 +682,7 @@ export class TxBuilder {
         auth: [],
       }),
     );
+    this.descriptors.push({ type: 'invokeContract', params });
     return this;
   }
 
@@ -597,10 +715,15 @@ export class TxBuilder {
    */
   setMemo(text: string): this {
     if (!text || typeof text !== 'string') {
-      throw new Error('Memo must be a non-empty string');
+      throw new TxBuilderValidationError('Memo must be a non-empty string', 'memo', text);
     }
     const byteLength = Buffer.byteLength(text, 'utf8');
-    if (byteLength > 28) throw new Error(`Memo text exceeds 28-byte limit (${byteLength} bytes)`);
+    if (byteLength > 28)
+      throw new TxBuilderValidationError(
+        `Memo text exceeds 28-byte limit (${byteLength} bytes)`,
+        'memo',
+        text,
+      );
     this.memo = Memo.text(text);
     return this;
   }
@@ -618,6 +741,24 @@ export class TxBuilder {
     return this;
   }
 
+  // ── inspection ────────────────────────────────────────────────────────
+
+  /**
+   * Returns a plain-object description of the builder's current state.
+   * Useful for AI agents to inspect and validate a transaction before building.
+   * @returns TxDescription object
+   */
+  describe(): TxDescription {
+    return {
+      network: this.options.network,
+      source: this.keypair.publicKey(),
+      fee: this.options.fee || '100',
+      memo: this.memo?.value?.toString() || undefined,
+      timebounds: this.timebounds,
+      operations: [...this.descriptors],
+    };
+  }
+
   // ── build ─────────────────────────────────────────────────────────────
 
   /**
@@ -628,13 +769,18 @@ export class TxBuilder {
    */
   async build(): Promise<BuiltTransaction> {
     if (this.operations.length === 0)
-      throw new Error('Cannot build a transaction with no operations');
+      throw new TxBuilderValidationError('Cannot build a transaction with no operations');
 
     const horizonUrl = this.options.horizonUrl ?? HORIZON_URLS[this.options.network];
     const passphrase = NETWORK_PASSPHRASES[this.options.network];
     const server = new Horizon.Server(horizonUrl);
 
-    const sourceAccount = await server.loadAccount(this.keypair.publicKey());
+    let sourceAccount;
+    try {
+      sourceAccount = await server.loadAccount(this.keypair.publicKey());
+    } catch (e: any) {
+      throw new TxBuilderNetworkError(`Failed to load source account: ${e.message}`);
+    }
 
     const builder = new StellarTransactionBuilder(sourceAccount, {
       fee: this.options.fee ?? '100',
@@ -663,12 +809,18 @@ export class TxBuilder {
 
     if (hasSoroban) {
       if (!this.options.sorobanUrl) {
-        throw new Error(
+        throw new TxBuilderValidationError(
           'sorobanUrl is required in TxBuilderOptions when invoking a Soroban contract',
+          'sorobanUrl',
+          undefined,
         );
       }
       const sorobanServer = new rpc.Server(this.options.sorobanUrl);
-      finalTx = (await sorobanServer.prepareTransaction(tx)) as Transaction;
+      try {
+        finalTx = (await sorobanServer.prepareTransaction(tx)) as Transaction;
+      } catch (e: any) {
+        throw new TxBuilderNetworkError(`Failed to prepare Soroban transaction: ${e.message}`);
+      }
     }
 
     // Note: Fee bump implementation requires SDK compatibility fixes

@@ -1,0 +1,758 @@
+/* ============================================================
+   AXIOM PRECISION x STELLAR FLOW
+   High-Precision Swiss Minimalist UI with Midnight Tech Hybrid
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Geist:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* ---- CSS Reset ---- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--c-stroke);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-outline);
+}
+
+/* ============================================================
+   LIGHT THEME: Axiom Precision (Default)
+   Pure Monochrome + Electric Cobalt Accent + 0px Radius
+   ============================================================ */
+:root {
+  --c-bg: #ffffff;
+  --c-surface: #ffffff;
+  --c-surface-dim: #f9f9f9;
+  --c-surface-container: #eeeeee;
+  --c-surface-container-high: #e8e8e8;
+  
+  --c-ink: #000000;
+  --c-ink-mid: #1a1c1c;
+  --c-ink-dim: #434655;
+  --c-outline: #737686;
+  --c-stroke: #e5e5e5;
+  
+  --c-accent: #2563eb;
+  --c-accent-hover: #1d4ed8;
+  --c-accent-bg: rgba(37, 99, 235, 0.08);
+  --c-accent-active: #dbe1ff;
+  
+  --c-error: #ba1a1a;
+  --c-error-bg: #ffdad6;
+  --c-success: #166534;
+  --c-success-bg: #dcfce7;
+  
+  --f-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --f-mono: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Consolas, monospace;
+  
+  --r-none: 0px;
+  --r-sm: 0px;
+  --r-md: 0px;
+  --r-lg: 0px;
+  
+  --border-width: 1px;
+  --shadow-flat: none;
+  --glow: none;
+  
+  /* Code syntax (Light high-contrast Swiss) */
+  --syn-kw: #943700;
+  --syn-fn: #004ac6;
+  --syn-str: #15803d;
+  --syn-num: #b45309;
+  --syn-cm: #737686;
+  --syn-op: #000000;
+  --syn-type: #2563eb;
+  --code-bg: #000000;
+  --code-text: #ffffff;
+}
+
+/* ============================================================
+   DARK THEME: Stellar Flow Midnight Tech (Zip 8)
+   Precision Glassmorphism + Stellar Blue Accent + 4px Radius
+   ============================================================ */
+[data-theme="dark"] {
+  --c-bg: #051425;
+  --c-surface: #0d1c2e;
+  --c-surface-dim: #091728;
+  --c-surface-container: #172638;
+  --c-surface-container-high: #1e3146;
+  
+  --c-ink: #ffffff;
+  --c-ink-mid: #dee3e8;
+  --c-ink-dim: #87929a;
+  --c-outline: #475569;
+  --c-stroke: rgba(148, 163, 184, 0.15);
+  
+  --c-accent: #38bdf8;
+  --c-accent-hover: #7dd3fc;
+  --c-accent-bg: rgba(56, 189, 248, 0.12);
+  --c-accent-active: rgba(56, 189, 248, 0.22);
+  
+  --c-error: #ffb4ab;
+  --c-error-bg: rgba(186, 26, 26, 0.2);
+  --c-success: #86efac;
+  --c-success-bg: rgba(22, 101, 52, 0.2);
+  
+  --f-sans: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --f-mono: 'JetBrains Mono', monospace;
+  
+  --r-none: 0px;
+  --r-sm: 2px;
+  --r-md: 4px;
+  --r-lg: 6px;
+  
+  --border-width: 1px;
+  --shadow-flat: 0 0 0 1px var(--c-stroke);
+  --glow: 0 0 20px rgba(56, 189, 248, 0.18);
+  
+  /* Code syntax (Midnight Neon) */
+  --syn-kw: #38bdf8;
+  --syn-fn: #7dd3fc;
+  --syn-str: #86efac;
+  --syn-num: #fbbf24;
+  --syn-cm: #64748b;
+  --syn-op: #dee3e8;
+  --syn-type: #c084fc;
+  --code-bg: #020617;
+  --code-text: #f8fafc;
+}
+
+/* ============================================================
+   GLOBAL BASE
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--f-sans);
+  background-color: var(--c-bg);
+  color: var(--c-ink-mid);
+  min-height: 100vh;
+  transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================
+   TYPOGRAPHY SYSTEM (From DESIGN (1).md)
+   ============================================================ */
+.font-display-xl {
+  font-family: var(--f-sans);
+  font-size: clamp(38px, 6vw, 72px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.font-headline-lg {
+  font-family: var(--f-sans);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: -0.03em;
+}
+
+.font-headline-md {
+  font-family: var(--f-sans);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: -0.02em;
+}
+
+.font-body-lg {
+  font-family: var(--f-sans);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: -0.01em;
+}
+
+.font-body-md {
+  font-family: var(--f-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: -0.01em;
+}
+
+.font-body-sm {
+  font-family: var(--f-sans);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  letter-spacing: 0.01em;
+}
+
+.font-label-caps {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.font-mono {
+  font-family: var(--f-mono);
+  font-feature-settings: "liga" 0;
+}
+
+/* ============================================================
+   MICRO-ANIMATIONS & MOTION
+   ============================================================ */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.6;
+  }
+}
+
+@keyframes borderFlash {
+  0% { border-color: var(--c-accent); }
+  100% { border-color: var(--c-stroke); }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
+}
+
+.anim-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.anim-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.12s; }
+.stagger-3 { animation-delay: 0.20s; }
+.stagger-4 { animation-delay: 0.28s; }
+
+/* ============================================================
+   LAYOUT SYSTEM (12-Column Grid & 80px Spacing)
+   ============================================================ */
+.container-swiss {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+.section-gap {
+  margin-top: 80px;
+  margin-bottom: 80px;
+}
+
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+/* ============================================================
+   COMPONENTS: NAVBAR (Axiom Swiss Header)
+   ============================================================ */
+.swiss-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--c-bg);
+  border-bottom: 1px solid var(--c-stroke);
+  backdrop-filter: blur(12px);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--c-ink);
+  cursor: pointer;
+}
+
+.brand-logo-glyph {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-accent);
+}
+
+.brand-title {
+  font-family: var(--f-sans);
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  color: var(--c-ink);
+}
+
+.brand-badge {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border: 1px solid var(--c-stroke);
+  border-radius: var(--r-sm);
+  color: var(--c-ink-dim);
+  background-color: var(--c-surface-dim);
+}
+
+.nav-links-row {
+  display: flex;
+  align-items: center;
+  gap: 0px;
+  border-left: 1px solid var(--c-stroke);
+  border-right: 1px solid var(--c-stroke);
+}
+
+.nav-item-btn {
+  background: none;
+  border: none;
+  font-family: var(--f-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 0 20px;
+  height: 64px;
+  color: var(--c-ink-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.nav-item-btn:hover {
+  color: var(--c-ink);
+  background-color: var(--c-surface-dim);
+}
+
+.nav-item-btn.active {
+  color: var(--c-ink);
+  background-color: var(--c-surface-dim);
+}
+
+.nav-item-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--c-accent);
+  animation: slideRight 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.header-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.network-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--c-stroke);
+  border-radius: var(--r-sm);
+  background-color: var(--c-surface);
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--c-ink-mid);
+}
+
+.network-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--c-accent);
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+.theme-toggle-btn {
+  background: var(--c-surface);
+  border: 1px solid var(--c-stroke);
+  border-radius: var(--r-sm);
+  height: 34px;
+  width: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--c-ink);
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--c-accent);
+  color: var(--c-accent);
+}
+
+/* ============================================================
+   BUTTONS (Swiss 0px Sharp Aesthetics)
+   ============================================================ */
+.btn-swiss-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--c-ink);
+  color: var(--c-bg);
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-sm);
+  padding: 12px 24px;
+  font-family: var(--f-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-swiss-primary:hover {
+  background-color: var(--c-accent);
+  border-color: var(--c-accent);
+  color: #ffffff;
+}
+
+.btn-swiss-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: transparent;
+  color: var(--c-ink);
+  border: 1px solid var(--c-ink);
+  border-radius: var(--r-sm);
+  padding: 12px 24px;
+  font-family: var(--f-sans);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-swiss-secondary:hover {
+  background-color: var(--c-ink);
+  color: var(--c-bg);
+}
+
+.btn-swiss-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--c-accent);
+  color: #ffffff;
+  border: 1px solid var(--c-accent);
+  border-radius: var(--r-sm);
+  padding: 12px 24px;
+  font-family: var(--f-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-swiss-accent:hover {
+  background-color: var(--c-accent-hover);
+}
+
+.btn-swiss-sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* ============================================================
+   CARDS & CONTAINERS (1px Razor Borders, 0px Radius)
+   ============================================================ */
+.swiss-card {
+  background-color: var(--c-surface);
+  border: 1px solid var(--c-stroke);
+  border-radius: var(--r-sm);
+  padding: 32px;
+  position: relative;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.swiss-card:hover {
+  border-color: var(--c-outline);
+}
+
+.swiss-card-accent-edge {
+  position: relative;
+}
+
+.swiss-card-accent-edge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: var(--c-accent);
+}
+
+/* ============================================================
+   INPUT FIELDS & SELECTS
+   ============================================================ */
+.swiss-input {
+  width: 100%;
+  background-color: var(--c-surface);
+  border: 1px solid var(--c-stroke);
+  border-radius: var(--r-sm);
+  padding: 10px 14px;
+  font-family: var(--f-sans);
+  font-size: 14px;
+  color: var(--c-ink);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.swiss-input:focus {
+  border-color: var(--c-accent);
+}
+
+.swiss-input-mono {
+  font-family: var(--f-mono);
+  font-size: 13px;
+}
+
+.swiss-label {
+  display: block;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-ink-dim);
+  margin-bottom: 6px;
+}
+
+/* ============================================================
+   CODE BLOCKS & COMPARISON (Zip 4 & Zip 7)
+   ============================================================ */
+.code-container-swiss {
+  background-color: var(--code-bg);
+  color: var(--code-text);
+  border: 1px solid var(--c-stroke);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  font-family: var(--f-mono);
+}
+
+.code-header-swiss {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.code-tabs-row {
+  display: flex;
+  gap: 8px;
+}
+
+.code-tab-btn {
+  background: none;
+  border: none;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 4px 8px;
+  cursor: pointer;
+  border-bottom: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.code-tab-btn:hover {
+  color: #ffffff;
+}
+
+.code-tab-btn.active {
+  color: var(--c-accent);
+  border-bottom-color: var(--c-accent);
+}
+
+.code-content-pre {
+  padding: 16px;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  line-height: 22px;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* Syntax Highlighting */
+.syn-kw { color: var(--syn-kw); font-weight: 600; }
+.syn-fn { color: var(--syn-fn); }
+.syn-str { color: var(--syn-str); }
+.syn-num { color: var(--syn-num); }
+.syn-cm { color: var(--syn-cm); font-style: italic; }
+.syn-type { color: var(--syn-type); }
+
+/* ============================================================
+   STATUS BADGES & INDICATORS
+   ============================================================ */
+.status-square {
+  width: 8px;
+  height: 8px;
+  display: inline-block;
+  background-color: var(--c-accent);
+  border-radius: var(--r-none);
+}
+
+.status-square.inactive {
+  background-color: transparent;
+  border: 1px solid var(--c-stroke);
+}
+
+.badge-swiss {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid var(--c-stroke);
+  border-radius: var(--r-sm);
+  background-color: var(--c-surface-dim);
+  color: var(--c-ink-mid);
+}
+
+.badge-swiss.badge-success {
+  border-color: var(--c-success);
+  color: var(--c-success);
+  background-color: var(--c-success-bg);
+}
+
+.badge-swiss.badge-error {
+  border-color: var(--c-error);
+  color: var(--c-error);
+  background-color: var(--c-error-bg);
+}
+
+/* ============================================================
+   FOOTER (Swiss Engineering Minimalist)
+   ============================================================ */
+.swiss-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--c-stroke);
+  background-color: var(--c-surface);
+  padding: 32px 0;
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .footer-inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.footer-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.footer-link {
+  font-family: var(--f-sans);
+  font-size: 13px;
+  color: var(--c-ink-dim);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footer-link:hover {
+  color: var(--c-accent);
+}

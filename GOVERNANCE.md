@@ -1,13 +1,13 @@
 # Governance
 
-This document describes how the `stellar-tx-builder` project is currently
+This document describes how the `stellar-flow` project is currently
 governed, and how that's expected to change as the project grows.
 
 ---
 
 ## Current state
 
-`stellar-tx-builder` is maintained by a single maintainer
+`stellar-flow` is maintained by a single maintainer
 ([@T-kesh](https://github.com/T-kesh)). There is currently no formal
 maintainer team, reviewer group, or nomination process — decisions on
 direction, releases, and PR merges are made directly by the maintainer.
@@ -22,11 +22,11 @@ actually is rather than a description of a process that doesn't exist yet.
 ## How to get involved
 
 - **Report bugs or request features:** open a
-  [GitHub issue](https://github.com/stellarbuild/stellar-tx-builder/issues).
+  [GitHub issue](https://github.com/stellarbuild/stellar-flow/issues).
 - **Contribute code or docs:** see [CONTRIBUTING.md](CONTRIBUTING.md) and open
   a pull request. All PRs are reviewed by the maintainer before merge.
 - **Ask questions:** open a
-  [discussion](https://github.com/stellarbuild/stellar-tx-builder/discussions)
+  [discussion](https://github.com/stellarbuild/stellar-flow/discussions)
   or an issue.
 
 Contributors who submit sustained, high-quality PRs may be invited to take on

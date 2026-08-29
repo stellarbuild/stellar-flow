@@ -20,19 +20,19 @@ system configuration, and compatibility requirements.
 ### npm
 
 ```bash
-npm install @stellarbuild/stellar-tx-builder @stellar/stellar-sdk
+npm install @stellarbuild/stellar-flow @stellar/stellar-sdk
 ```
 
 ### yarn
 
 ```bash
-yarn add @stellarbuild/stellar-tx-builder @stellar/stellar-sdk
+yarn add @stellarbuild/stellar-flow @stellar/stellar-sdk
 ```
 
 ### pnpm
 
 ```bash
-pnpm add @stellarbuild/stellar-tx-builder @stellar/stellar-sdk
+pnpm add @stellarbuild/stellar-flow @stellar/stellar-sdk
 ```
 
 > `@stellar/stellar-sdk` is a **peer dependency** — it must be installed
@@ -60,7 +60,7 @@ The correct build is automatically selected by your toolchain via the
 ## Usage in CommonJS (Node.js)
 
 ```javascript
-const { TxBuilder } = require('@stellarbuild/stellar-tx-builder');
+const { TxBuilder } = require('@stellarbuild/stellar-flow');
 const { Keypair } = require('@stellar/stellar-sdk');
 ```
 
@@ -69,7 +69,7 @@ const { Keypair } = require('@stellar/stellar-sdk');
 ## Usage in ESM
 
 ```typescript
-import { TxBuilder } from '@stellarbuild/stellar-tx-builder';
+import { TxBuilder } from '@stellarbuild/stellar-flow';
 import { Keypair } from '@stellar/stellar-sdk';
 ```
 
@@ -125,8 +125,9 @@ needed beyond a standard `tsconfig.json`:
 
 ## Version Compatibility Matrix
 
-| stellar-tx-builder | @stellar/stellar-sdk | Node.js |
+| stellar-flow | @stellar/stellar-sdk | Node.js |
 |---|---|---|
+| `0.4.x` | `^15.x` | 18, 20, 22 |
 | `0.3.x` | `^15.x` | 18, 20, 22 |
 | `0.2.x` | `^13.x` — `^14.x` | 18, 20 |
 | `0.1.x` | `^12.x` | 18 |
@@ -138,12 +139,12 @@ needed beyond a standard `tsconfig.json`:
 After installing, verify the package is correctly importable:
 
 ```typescript
-import { TxBuilder } from '@stellarbuild/stellar-tx-builder';
+import { TxBuilder } from '@stellarbuild/stellar-flow';
 import { Keypair } from '@stellar/stellar-sdk';
 
 const keypair = Keypair.random();
 const builder = TxBuilder.for(keypair, { network: 'testnet' });
-console.log('stellar-tx-builder loaded successfully');
+console.log('stellar-flow loaded successfully');
 ```
 
 ---
@@ -198,7 +199,7 @@ module.exports = nextConfig;
 Check the [CHANGELOG](../CHANGELOG.md) before upgrading for breaking changes.
 
 ```bash
-npm install @stellarbuild/stellar-tx-builder@latest
+npm install @stellarbuild/stellar-flow@latest
 ```
 
 To check for outdated packages:

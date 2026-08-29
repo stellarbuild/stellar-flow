@@ -19,11 +19,11 @@ understand the project workflow, and contribute code effectively.
 
 ```bash
 # 1. Fork the repository on GitHub, then clone your fork
-git clone https://github.com/<your-username>/stellar-tx-builder.git
-cd stellar-tx-builder
+git clone https://github.com/<your-username>/stellar-flow.git
+cd stellar-flow
 
 # 2. Add the upstream remote to stay in sync
-git remote add upstream https://github.com/stellarbuild/stellar-tx-builder.git
+git remote add upstream https://github.com/stellarbuild/stellar-flow.git
 
 # 3. Install all dependencies
 npm install

@@ -743,6 +743,15 @@ describe('wrapInFeeBump()', () => {
   it('throws on negative fee amount', () => {
     expect(() => builder().wrapInFeeBump(DEST, '-100')).toThrow('must be greater than 0');
   });
+
+  it('throws during build() — not yet fully implemented', async () => {
+    const b = builder()
+      .addPayment({ destination: DEST, amount: '10', asset: 'XLM' })
+      .wrapInFeeBump(DEST);
+    await expect(b.build()).rejects.toThrow(
+      'Fee bump transaction requires SDK compatibility fixes',
+    );
+  });
 });
 
 describe('setMemo()', () => {

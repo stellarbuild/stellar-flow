@@ -1,6 +1,6 @@
 # Support
 
-This document describes how to get help with `stellar-tx-builder`.
+This document describes how to get help with `stellar-flow`.
 
 ---
 
@@ -12,7 +12,7 @@ Please try the following first:
    [`docs/`](docs/) directory.
 2. **Check the [FAQ](FAQ.md)** — your question may already be answered.
 3. **Search existing issues** —
-   [github.com/stellarbuild/stellar-tx-builder/issues](https://github.com/stellarbuild/stellar-tx-builder/issues)
+   [github.com/stellarbuild/stellar-flow/issues](https://github.com/stellarbuild/stellar-flow/issues)
 4. **Check the [Troubleshooting guide](docs/troubleshooting.md)** for common
    errors and resolutions.
 
@@ -24,22 +24,22 @@ Please try the following first:
 
 For questions, ideas, and general discussion:
 
-[github.com/stellarbuild/stellar-tx-builder/discussions](https://github.com/stellarbuild/stellar-tx-builder/discussions)
+[github.com/stellarbuild/stellar-flow/discussions](https://github.com/stellarbuild/stellar-flow/discussions)
 
 | Category | Purpose |
 |---|---|
 | **Q&A** | Ask questions about using the library |
 | **Ideas** | Suggest features or improvements |
-| **Show and Tell** | Share projects built with stellar-tx-builder |
+| **Show and Tell** | Share projects built with stellar-flow |
 | **General** | Anything that doesn't fit the above |
 
 ### GitHub Issues
 
 For confirmed bugs and feature requests only — not for support questions.
 
-- [Report a bug](https://github.com/stellarbuild/stellar-tx-builder/issues/new?template=bug_report.yml)
-- [Request a feature](https://github.com/stellarbuild/stellar-tx-builder/issues/new?template=feature_request.yml)
-- [Report a documentation issue](https://github.com/stellarbuild/stellar-tx-builder/issues/new?template=documentation_issue.yml)
+- [Report a bug](https://github.com/stellarbuild/stellar-flow/issues/new?template=bug_report.yml)
+- [Request a feature](https://github.com/stellarbuild/stellar-flow/issues/new?template=feature_request.yml)
+- [Report a documentation issue](https://github.com/stellarbuild/stellar-flow/issues/new?template=documentation_issue.yml)
 
 For private matters or security concerns, see the
 [Security Policy](SECURITY.md) — reports go through GitHub's private

@@ -3,7 +3,7 @@
 ## Our Pledge
 
 We as members, contributors, and leaders pledge to make participation in the
-`stellar-tx-builder` community a harassment-free experience for everyone,
+`stellar-flow` community a harassment-free experience for everyone,
 regardless of age, body size, visible or invisible disability, ethnicity, sex
 characteristics, gender identity and expression, level of experience, education,
 socio-economic status, nationality, personal appearance, race, caste, color,
@@ -59,7 +59,7 @@ representative at an online or offline event.
 
 Instances of abusive, harassing, or otherwise unacceptable behaviour may be
 reported by opening a private security advisory via the
-[Security tab](https://github.com/stellarbuild/stellar-tx-builder/security),
+[Security tab](https://github.com/stellarbuild/stellar-flow/security),
 or by contacting the maintainer directly through their
 [GitHub profile](https://github.com/T-kesh).
 

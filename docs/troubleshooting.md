@@ -1,19 +1,19 @@
 # Troubleshooting
 
-This guide lists common errors encountered when using `stellar-tx-builder` and
+This guide lists common errors encountered when using `stellar-flow` and
 how to resolve them.
 
 ---
 
 ## Build Errors
 
-### `Cannot find module '@stellarbuild/stellar-tx-builder'`
+### `Cannot find module '@stellarbuild/stellar-flow'`
 
 **Cause:** The package is not installed.
 
 **Fix:**
 ```bash
-npm install @stellarbuild/stellar-tx-builder @stellar/stellar-sdk
+npm install @stellarbuild/stellar-flow @stellar/stellar-sdk
 ```
 
 ---
@@ -223,12 +223,22 @@ before it can receive it.
 
 ---
 
-### `Soroban contract invocation is not yet fully implemented`
+### `sorobanUrl is required in TxBuilderOptions when invoking a Soroban contract`
 
-**Cause:** `invokeContract()` has not been fully implemented yet.
+**Cause:** `invokeContract()` was called but `sorobanUrl` was not set in `TxBuilderOptions`.
 
-**Fix:** Use `@stellar/stellar-sdk` directly for Soroban operations, or wait
-for v0.4.0. See [FAQ.md](../FAQ.md) for an example.
+**Fix:** Add `sorobanUrl` to the options object passed to `TxBuilder.for()`:
+
+```typescript
+TxBuilder.for(keypair, {
+  network: 'testnet',
+  sorobanUrl: 'https://soroban-testnet.stellar.org', // ← required
+})
+  .invokeContract({ ... })
+  .build();
+```
+
+For mainnet, use `'https://soroban.stellar.org'`.
 
 ---
 
@@ -245,6 +255,6 @@ directly. See [FAQ.md](../FAQ.md) for an example.
 
 If your issue is not listed here:
 
-1. Search [existing GitHub issues](https://github.com/stellarbuild/stellar-tx-builder/issues).
-2. Ask in [GitHub Discussions](https://github.com/stellarbuild/stellar-tx-builder/discussions).
-3. Include your `stellar-tx-builder` version, `@stellar/stellar-sdk` version, Node.js version, and a minimal reproduction.
+1. Search [existing GitHub issues](https://github.com/stellarbuild/stellar-flow/issues).
+2. Ask in [GitHub Discussions](https://github.com/stellarbuild/stellar-flow/discussions).
+3. Include your `stellar-flow` version, `@stellar/stellar-sdk` version, Node.js version, and a minimal reproduction.

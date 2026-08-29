@@ -4,9 +4,9 @@
 
 ## General
 
-### What is stellar-tx-builder?
+### What is stellar-flow?
 
-`stellar-tx-builder` is a fluent, type-safe TypeScript library that wraps the
+`stellar-flow` is a fluent, type-safe TypeScript library that wraps the
 official `@stellar/stellar-sdk` to provide a chainable builder API for
 constructing, signing, and submitting Stellar network transactions. It reduces
 boilerplate without replacing or re-implementing Stellar primitives.
@@ -22,7 +22,7 @@ The Stellar SDK gives you full control but requires you to manually:
 - Call verbose `Operation.*` factory functions
 - Manage memo encoding, timebound formatting, and asset resolution separately
 
-`stellar-tx-builder` handles all of that scaffolding in a single fluent chain.
+`stellar-flow` handles all of that scaffolding in a single fluent chain.
 If you need low-level control that this library doesn't expose, you should use
 the SDK directly — this library does not block that.
 
@@ -42,7 +42,7 @@ for bundle configuration guidance.
 
 ### Does this library store or transmit my private keys?
 
-No. `stellar-tx-builder` never stores, logs, or transmits private keys. You
+No. `stellar-flow` never stores, logs, or transmits private keys. You
 pass a `Keypair` object to the builder at construction time, and that keypair
 is only used during `.sign()` to sign the transaction locally. All signing
 happens in-process using the Stellar SDK's cryptographic implementation.
@@ -80,7 +80,7 @@ your `tsconfig.json` includes `"moduleResolution": "bundler"` or `"node16"` /
 `"nodenext"` for ESM, or `"node"` for CommonJS projects.
 
 ```bash
-npm install @stellarbuild/stellar-tx-builder @stellar/stellar-sdk
+npm install @stellarbuild/stellar-flow @stellar/stellar-sdk
 ```
 
 See [docs/installation.md](docs/installation.md) for the complete setup guide.
@@ -93,7 +93,7 @@ Yes. The CJS build is at `dist/cjs/index.js` and is selected automatically
 when you use `require()`:
 
 ```javascript
-const { TxBuilder } = require('@stellarbuild/stellar-tx-builder');
+const { TxBuilder } = require('@stellarbuild/stellar-flow');
 ```
 
 ---
@@ -103,7 +103,7 @@ const { TxBuilder } = require('@stellarbuild/stellar-tx-builder');
 Yes. The ESM build is at `dist/esm/index.js` and is selected automatically:
 
 ```typescript
-import { TxBuilder } from '@stellarbuild/stellar-tx-builder';
+import { TxBuilder } from '@stellarbuild/stellar-flow';
 ```
 
 ---
@@ -208,25 +208,32 @@ const tx = await TxBuilder.for(keypair, { network: 'testnet' })
 
 ---
 
-### Why does `invokeContract()` throw "not yet fully implemented"?
+### How do I invoke a Soroban smart contract?
 
-Full Soroban / `InvokeHostFunction` support requires complex XDR construction
-that is planned for v0.4.0. For now, the method validates your inputs but
-throws before building. For Soroban operations in the meantime, use
-`@stellar/stellar-sdk` directly:
+Use `invokeContract()` with a `sorobanUrl` in your options. When `.build()` is
+called, the library calls `SorobanRpc.Server.prepareTransaction()` to set the
+correct resource fee and footprint automatically.
 
 ```typescript
-import { Operation, xdr } from '@stellar/stellar-sdk';
+import { TxBuilder, ScVal } from '@stellarbuild/stellar-flow';
 
-const op = Operation.invokeHostFunction({
-  func: xdr.HostFunction.hostFunctionTypeInvokeContract(
-    new xdr.InvokeContractArgs({ ... })
-  ),
-  auth: [],
-});
+const tx = await TxBuilder.for(keypair, {
+  network: 'testnet',
+  sorobanUrl: 'https://soroban-testnet.stellar.org',
+})
+  .invokeContract({
+    contractId: 'CCLZ...',
+    functionName: 'increment',
+    args: [ScVal.u32(1)],
+  })
+  .build();
+
+await tx.sign(keypair).submit();
 ```
 
-See the [Roadmap](ROADMAP.md) for the planned Soroban release timeline.
+The `ScVal` object (exported from `stellar-flow`) provides type-safe helpers
+for constructing Soroban arguments: `ScVal.Address()`, `ScVal.i128()`,
+`ScVal.u64()`, `ScVal.Vec()`, `ScVal.Map()`, and more.
 
 ---
 

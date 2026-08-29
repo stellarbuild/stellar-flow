@@ -1,7 +1,7 @@
 # Design Decisions
 
 This document records significant architectural and API design decisions made
-in `stellar-tx-builder`, along with the context, alternatives considered, and
+in `stellar-flow`, along with the context, alternatives considered, and
 rationale. New decisions should be added here as Architecture Decision Records
 (ADRs).
 
@@ -165,7 +165,7 @@ and ISO 8601 strings.
 ## ADR-006: Single `TxBuilder.ts` Source File
 
 **Date:** 2025-01-20
-**Status:** Accepted (subject to review at v0.4+)
+**Status:** Partially superseded — `soroban.ts` extracted at v0.4.0
 
 ### Context
 
@@ -174,19 +174,20 @@ to split into multiple files (one per operation group, separate files for helper
 
 ### Decision
 
-All implementation lives in a single `src/TxBuilder.ts` file, with
-`src/types.ts` for type declarations and `src/index.ts` as a barrel file.
+Core implementation lives in `src/TxBuilder.ts`, with `src/types.ts` for type
+declarations, `src/soroban.ts` for Soroban utilities, and `src/index.ts` as a
+barrel file.
 
 ### Rationale
 
-- At the current size (< 700 LOC), a single file is easy to navigate with
-  section comments
+- At the current size (~685 LOC for `TxBuilder.ts`), a single core file is easy to navigate with section comments
+- `soroban.ts` was extracted at v0.4.0 as Soroban argument construction is a
+  distinct concern with its own test file
 - Avoids unnecessary module graph complexity for a library of this scope
-- Keeps the build simple
 
 ### When to Revisit
 
-If `TxBuilder.ts` exceeds ~1,200 LOC or Soroban support adds significant
+If `TxBuilder.ts` exceeds ~1,200 LOC or additional Soroban operations add significant
 complexity, split into:
 
 ```

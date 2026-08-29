@@ -1,6 +1,6 @@
 # Architecture
 
-This document describes the internal architecture of `stellar-tx-builder` — how
+This document describes the internal architecture of `stellar-flow` — how
 it is structured, how data flows through it, and how it relates to the Stellar
 SDK.
 
@@ -8,7 +8,7 @@ SDK.
 
 ## Overview
 
-`stellar-tx-builder` is a thin, composable layer above `@stellar/stellar-sdk`.
+`stellar-flow` is a thin, composable layer above `@stellar/stellar-sdk`.
 It implements the **Builder pattern** to provide a fluent, chainable API for
 assembling Stellar transactions. It does not reimplement any Stellar protocol
 logic — all XDR encoding, cryptography, and network communication is delegated
@@ -69,6 +69,7 @@ to the Stellar SDK and Horizon.
 src/
 ├── TxBuilder.ts       The core class — builder state, operation methods, build()
 ├── types.ts           All exported TypeScript interfaces
+├── soroban.ts         ScVal builder utilities exported as the `ScVal` object
 └── index.ts           Public API re-exports only
 ```
 

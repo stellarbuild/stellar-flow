@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `@stellarbuild/stellar-tx-builder` are documented in
+All notable changes to `@stellarbuild/stellar-flow` are documented in
 this file.
 
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
@@ -8,56 +8,32 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
-## [Unreleased]
+---
+
+## [0.4.0] — 2026-08-29
 
 ### Added
+- `invokeContract()` — Soroban smart contract invocations using `Operation.invokeHostFunction`
+- `ScVal` builder utilities exported from the package: `ScVal.Address`, `ScVal.i128`, `ScVal.u64`, `ScVal.u32`, `ScVal.i32`, `ScVal.Bool`, `ScVal.String`, `ScVal.Symbol`, `ScVal.Bytes`, `ScVal.Vec`, `ScVal.Map`
+- `sorobanUrl` option in `TxBuilderOptions` — required when calling `invokeContract()`
+- Automatic resource fee and footprint resolution via `SorobanRpc.Server.prepareTransaction()` called inside `build()`
 - Dual ESM/CommonJS build output (`dist/cjs/` and `dist/esm/`)
-- `exports` field in `package.json` for correct module resolution in bundlers
+- `exports` field in `package.json` for correct module resolution in ESM bundlers (Vite, Next.js)
 - `tsconfig.esm.json` for the ESM compilation pass
-- `.prettierrc` for consistent code formatting
-- `format` and `format:check` npm scripts
-- `typecheck` npm script (`tsc --noEmit`)
-- `clean` npm script to clear `dist/` before build
-- `lint:fix` npm script
 - `release.yml` GitHub Actions workflow for automated npm publishing on version tags
-- `CODEOWNERS` file routing reviews to appropriate teams
-- `dependabot.yml` with grouped dependency update configuration
-- GitHub issue form templates (bug report, feature request, documentation issue)
+- `CODEOWNERS`, `dependabot.yml`, and GitHub issue form templates
 - Pull request template with type-of-change checklist
-- `CODE_OF_CONDUCT.md` — Contributor Covenant v2.1
-- `SECURITY.md` — responsible disclosure policy and reporting process
-- `GOVERNANCE.md` — project roles, decision-making process, and release policy
-- `ROADMAP.md` — public feature roadmap
-- `SUPPORT.md` — support channels and community resources
-- `FAQ.md` — frequently asked questions
-- `docs/architecture.md` — package architecture and pipeline documentation
-- `docs/api.md` — complete API reference
-- `docs/transaction-builder.md` — deep-dive into the builder pattern
-- `docs/installation.md` — installation and compatibility guide
-- `docs/development.md` — local development guide
-- `docs/testing.md` — testing strategy and guide
-- `docs/publishing.md` — release and publishing runbook
-- `docs/troubleshooting.md` — common errors and resolutions
-- `docs/coding-standards.md` — code style and conventions
-- `docs/design-decisions.md` — architecture decision records
+- `CODE_OF_CONDUCT.md`, `SECURITY.md`, `GOVERNANCE.md`, `ROADMAP.md`, `SUPPORT.md`, `FAQ.md`
+- Full `docs/` suite: `architecture.md`, `api.md`, `transaction-builder.md`, `installation.md`, `development.md`, `testing.md`, `publishing.md`, `troubleshooting.md`, `coding-standards.md`, `design-decisions.md`
 
 ### Changed
-- `README.md` rewritten to production quality with full API overview, architecture diagram, and usage examples
+- `README.md` rewritten with full API overview, architecture diagram, agent usage patterns, and accurate usage examples
 - `CONTRIBUTING.md` expanded with commit conventions, branch strategy, and full workflow
 - `tsconfig.json` updated to output to `dist/cjs/` with additional compiler strictness flags
 - `ci.yml` upgraded with `concurrency` cancellation, dedicated quality-checks job, and build artifact verification
-- `.gitignore` extended with `temp/`, `*.tgz`, and `npm-debug.log*` patterns
 - `package.json` upgraded with `exports`, `publishConfig`, `engines`, `author`, and `sideEffects: false`
-
----
-
-## [0.4.0] — 2026-08-12
-
-### Added
-- `invokeContract()` support for Soroban smart contract invocations.
-- `ScVal` builder utilities (`ScVal.Address`, `ScVal.i128`, `ScVal.u64`, `ScVal.Bytes`, `ScVal.Vec`, `ScVal.Map`, etc.) for type-safe argument construction.
-- `sorobanUrl` parameter in `TxBuilderOptions` (required for Soroban transactions).
-- Automatic transaction fee and footprint simulation via `SorobanRpc.Server.prepareTransaction()` during `build()`.
+- `.gitignore` extended with `temp/`, `*.tgz`, and `npm-debug.log*` patterns
+- `.prettierrc` added for consistent code formatting; `format`, `format:check`, `typecheck`, `clean`, `lint:fix` npm scripts added
 
 ---
 
@@ -67,8 +43,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - `addManageBuyOffer()` operation support
 - `addSetOptions()` with full signer type support (ed25519, sha256, preAuthTx)
 - `addManageData()` with 64-byte name and value length validation
-- `invokeContract()` stub with input validation (full Soroban implementation planned for v0.4)
-- `wrapInFeeBump()` with address and fee validation (full implementation planned)
+- `invokeContract()` stub — now fully implemented in v0.4.0, see above
+- `wrapInFeeBump()` with address and fee validation (full implementation planned for v0.6.0)
 - `addPathPayment()` using `PathPaymentStrictSend`
 - Relative timebound expressions: `+5m`, `+1h`, `+2d`, `+30s`
 - `resolvePrice()` helper supporting string decimals and `{ n, d }` fractions
@@ -112,7 +88,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Full TypeScript declarations
 - Unit test suite with Horizon mock
 
-[Unreleased]: https://github.com/stellarbuild/stellar-tx-builder/compare/v0.3.0...HEAD
-[0.3.0]: https://github.com/stellarbuild/stellar-tx-builder/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/stellarbuild/stellar-tx-builder/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/stellarbuild/stellar-tx-builder/releases/tag/v0.1.0
+[Unreleased]: https://github.com/stellarbuild/stellar-flow/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/stellarbuild/stellar-flow/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/stellarbuild/stellar-flow/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/stellarbuild/stellar-flow/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/stellarbuild/stellar-flow/releases/tag/v0.1.0

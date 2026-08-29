@@ -1,11 +1,15 @@
 # Roadmap
 
-This document outlines the planned direction for `stellar-tx-builder`. It is a
+This document outlines the planned direction for `stellar-flow`. It is a
 living document — items may be added, reprioritised, or removed based on
 community feedback, Stellar protocol changes, and maintainer capacity.
 
+This roadmap is written to be useful to two audiences:
+- **Human developers** building wallets, DeFi tools, payment rails, and applications on Stellar
+- **AI agents and automated systems** that need to construct and submit transactions programmatically
+
 To propose an addition to the roadmap, open a
-[Feature Request](https://github.com/stellarbuild/stellar-tx-builder/issues/new?template=feature_request.yml).
+[Feature Request](https://github.com/stellarbuild/stellar-flow/issues/new?template=feature_request.yml).
 
 ---
 
@@ -46,20 +50,20 @@ To propose an addition to the roadmap, open a
 - ✅ `invokeContract()` validation stub
 - ✅ `wrapInFeeBump()` validation stub
 
+### v0.4.0
+- ✅ `invokeContract()` — Soroban contract invocations via `Operation.invokeHostFunction`
+- ✅ `ScVal` builder utilities (`ScVal.Address`, `ScVal.i128`, `ScVal.u64`, `ScVal.u32`, `ScVal.i32`, `ScVal.Bool`, `ScVal.String`, `ScVal.Symbol`, `ScVal.Bytes`, `ScVal.Vec`, `ScVal.Map`)
+- ✅ `sorobanUrl` option in `TxBuilderOptions`
+- ✅ Automatic resource fee and footprint resolution via `SorobanRpc.Server.prepareTransaction()` in `build()`
+- ✅ Dual CJS/ESM build output
+- ✅ Full `docs/` suite and production-quality `README.md`
+
 ---
 
 ## Planned
 
-### v0.4.0 — Soroban Support
-Target: Q3 2025
-
-- ✅ Full `invokeContract()` implementation using `Operation.invokeHostFunction`
-- ✅ Soroban argument type helpers: `ScVal` builder utilities for `Address`, `i128`, `u64`, `Bytes`, `Vec`, `Map`
-- ✅ Soroban transaction fee simulation via `SorobanRpc.Server`
-- ✅ `sorobanUrl` configuration option in `TxBuilderOptions`
-
 ### v0.5.0 — Additional Classic Operations
-Target: Q4 2025
+Target: Q4 2025 *(carried forward)*
 
 - 📋 `addPathPaymentStrictReceive()` — specify exact destination amount
 - 📋 `addCreateClaimableBalance()` — create claimable balance entries
@@ -74,22 +78,46 @@ Target: Q1 2026
 - 📋 Fee bump XDR export
 - 📋 Fee bump submission via Horizon
 
-### v0.7.0 — Developer Experience
+### v0.7.0 — Developer Experience & Agent Reliability
 Target: Q2 2026
 
-- 📋 `TxBuilder.fromXDR()` — reconstruct a builder from an existing XDR envelope
-- 📋 `simulate()` method for dry-run Soroban transaction simulation
-- 📋 `estimateFee()` for Horizon base fee recommendations
-- 📋 Structured error classes (`TxBuilderValidationError`, `TxBuilderNetworkError`)
+- 📋 `TxBuilder.fromXDR()` — reconstruct a builder from an existing XDR envelope, useful for resuming or inspecting transactions created elsewhere
+- 📋 `simulate()` method — dry-run Soroban transaction simulation without submitting; returns fee estimate and resource usage
+- 📋 `describe()` method — return a plain JavaScript object describing all queued operations, memo, timebounds, and fee config without making any network call; designed for agent inspection and human-readable logging
+- 📋 `estimateFee()` — query Horizon's current base fee recommendation before building
+- 📋 Structured error classes:
+  - `TxBuilderValidationError` — thrown at `.add*()` call sites for bad input; includes the field name and invalid value
+  - `TxBuilderNetworkError` — wraps Horizon connectivity failures from `.build()` or `.submit()`
+  - `TxBuilderSubmitError` — wraps Horizon rejection responses with the raw `result_codes` object
 
-### v1.0.0 — Stable Release
+### v0.8.0 — Agent & Automation Support
 Target: Q3 2026
 
-- 📋 Stable, locked public API
+This release is specifically motivated by the needs of AI agents, LLM-powered tools, and automated systems that interact with the Stellar network.
+
+- 📋 `builder.toJSON()` / `TxBuilder.fromJSON()` — serialize and deserialize a partially built transaction; enables pause-and-resume workflows across process boundaries or approval gates
+- 📋 `builder.inspect()` — return all queued operations as plain JavaScript objects (not XDR), allowing agents to read back what they have queued before calling `.build()`
+- 📋 Operation diffing — compare two serialized builders to produce a human-readable summary of what changed; useful for audit logs and approval UIs
+- 📋 `withTimeout()` builder option — automatically set a sensible transaction timeout based on expected processing time
+- 📋 Retry helpers — optional built-in exponential backoff for `.submit()` on transient Horizon failures
+
+### v0.9.0 — Multi-Transaction Workflows
+Target: Q4 2026
+
+- 📋 `TxSequence` — a higher-level construct for chaining multiple dependent transactions in order:
+  - Each step can depend on the result of the previous (e.g., use the created account's ID in the next transaction)
+  - Configurable `stopOnFailure` behaviour
+  - Serializable for approval-gated workflows
+- 📋 Conditional transaction templates — pre-define a transaction structure with placeholder values to be filled at execution time
+
+### v1.0.0 — Stable Release
+Target: Q1 2027
+
+- 📋 Stable, locked public API — no breaking changes after v1.0
 - 📋 Full Soroban operation coverage
 - 📋 Comprehensive integration test suite against Stellar testnet
 - 📋 Complete API documentation with generated typedoc
-- 📋 Audit of all public types and error messages
+- 📋 Audit of all public types, error messages, and structured error classes
 
 ---
 
@@ -99,6 +127,7 @@ Target: Q3 2026
 - 💬 **Browser wallet integration** — Freighter / Albedo signing adapter
 - 💬 **Multi-party signing workflow** — helpers for collecting signatures from multiple parties before submission
 - 💬 **Ledger hardware wallet support**
+- 💬 **AI agent integration guide** — a dedicated guide and utility module for building reliable agentic workflows on top of `stellar-flow`, covering error handling patterns, approval gates, and audit logging
 
 ---
 
@@ -112,6 +141,6 @@ Target: Q3 2026
 
 ## How to Influence the Roadmap
 
-1. Open a [Feature Request](https://github.com/stellarbuild/stellar-tx-builder/issues/new?template=feature_request.yml) describing your use case.
-2. Participate in [GitHub Discussions](https://github.com/stellarbuild/stellar-tx-builder/discussions) to share your priorities.
+1. Open a [Feature Request](https://github.com/stellarbuild/stellar-flow/issues/new?template=feature_request.yml) describing your use case.
+2. Participate in [GitHub Discussions](https://github.com/stellarbuild/stellar-flow/discussions) to share your priorities.
 3. Submit a pull request — working implementations are the most effective way to accelerate roadmap items.

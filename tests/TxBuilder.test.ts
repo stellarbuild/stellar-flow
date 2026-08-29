@@ -748,7 +748,9 @@ describe('wrapInFeeBump()', () => {
     const b = builder()
       .addPayment({ destination: DEST, amount: '10', asset: 'XLM' })
       .wrapInFeeBump(DEST);
-    await expect(b.build()).rejects.toThrow('Fee bump transaction requires SDK compatibility fixes');
+    await expect(b.build()).rejects.toThrow(
+      'Fee bump transaction requires SDK compatibility fixes',
+    );
   });
 });
 

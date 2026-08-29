@@ -10,6 +10,7 @@ Complete reference for all public classes, methods, and types exported by
 ```typescript
 import {
   TxBuilder,
+  ScVal,
 
   // Types (import with `import type` where possible)
   TxBuilderOptions,
@@ -66,6 +67,7 @@ interface TxBuilderOptions {
   network: 'mainnet' | 'testnet' | 'futurenet';
   fee?: string;        // base fee in stroops (default: '100')
   horizonUrl?: string; // override default Horizon endpoint
+  sorobanUrl?: string; // required when using invokeContract()
   timeout?: number;    // request timeout in ms (reserved for future use)
 }
 ```
@@ -75,6 +77,7 @@ interface TxBuilderOptions {
 | `network` | — | Target network. Determines Horizon URL and passphrase. |
 | `fee` | `'100'` | Base fee per operation in stroops (1 XLM = 10,000,000 stroops) |
 | `horizonUrl` | Auto | Override the Horizon URL. Useful for private Horizon instances. |
+| `sorobanUrl` | — | Soroban RPC URL. **Required** when using `invokeContract()`. |
 | `timeout` | — | Reserved — not yet applied |
 
 ---
@@ -329,7 +332,22 @@ interface InvokeContractParams {
 }
 ```
 
-*Note: For complex argument types, you should import the `ScVal` builder utilities (`ScVal.u64`, `ScVal.Vec`, etc.) to securely construct your native `xdr.ScVal` inputs.*
+*Note: For complex argument types, use the exported `ScVal` helpers from `stellar-flow` (`ScVal.u32()`, `ScVal.u64()`, `ScVal.Address()`, `ScVal.Vec()`, etc.) to construct typed `xdr.ScVal` inputs without importing SDK internals directly.*
+
+```typescript
+import { TxBuilder, ScVal } from '@stellarbuild/stellar-flow';
+
+const tx = await TxBuilder.for(keypair, {
+  network: 'testnet',
+  sorobanUrl: 'https://soroban-testnet.stellar.org',
+})
+  .invokeContract({
+    contractId: 'CCLZ...',
+    functionName: 'transfer',
+    args: [ScVal.Address(senderAddress), ScVal.Address(receiverAddress), ScVal.i128(1000n)],
+  })
+  .build();
+```
 
 ---
 

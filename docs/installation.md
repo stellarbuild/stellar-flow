@@ -127,6 +127,7 @@ needed beyond a standard `tsconfig.json`:
 
 | stellar-flow | @stellar/stellar-sdk | Node.js |
 |---|---|---|
+| `0.4.x` | `^15.x` | 18, 20, 22 |
 | `0.3.x` | `^15.x` | 18, 20, 22 |
 | `0.2.x` | `^13.x` — `^14.x` | 18, 20 |
 | `0.1.x` | `^12.x` | 18 |

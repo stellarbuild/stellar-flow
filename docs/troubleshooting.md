@@ -223,12 +223,22 @@ before it can receive it.
 
 ---
 
-### `Soroban contract invocation is not yet fully implemented`
+### `sorobanUrl is required in TxBuilderOptions when invoking a Soroban contract`
 
-**Cause:** `invokeContract()` has not been fully implemented yet.
+**Cause:** `invokeContract()` was called but `sorobanUrl` was not set in `TxBuilderOptions`.
 
-**Fix:** Use `@stellar/stellar-sdk` directly for Soroban operations, or wait
-for v0.4.0. See [FAQ.md](../FAQ.md) for an example.
+**Fix:** Add `sorobanUrl` to the options object passed to `TxBuilder.for()`:
+
+```typescript
+TxBuilder.for(keypair, {
+  network: 'testnet',
+  sorobanUrl: 'https://soroban-testnet.stellar.org', // ← required
+})
+  .invokeContract({ ... })
+  .build();
+```
+
+For mainnet, use `'https://soroban.stellar.org'`.
 
 ---
 

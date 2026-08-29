@@ -208,25 +208,32 @@ const tx = await TxBuilder.for(keypair, { network: 'testnet' })
 
 ---
 
-### Why does `invokeContract()` throw "not yet fully implemented"?
+### How do I invoke a Soroban smart contract?
 
-Full Soroban / `InvokeHostFunction` support requires complex XDR construction
-that is planned for v0.4.0. For now, the method validates your inputs but
-throws before building. For Soroban operations in the meantime, use
-`@stellar/stellar-sdk` directly:
+Use `invokeContract()` with a `sorobanUrl` in your options. When `.build()` is
+called, the library calls `SorobanRpc.Server.prepareTransaction()` to set the
+correct resource fee and footprint automatically.
 
 ```typescript
-import { Operation, xdr } from '@stellar/stellar-sdk';
+import { TxBuilder, ScVal } from '@stellarbuild/stellar-flow';
 
-const op = Operation.invokeHostFunction({
-  func: xdr.HostFunction.hostFunctionTypeInvokeContract(
-    new xdr.InvokeContractArgs({ ... })
-  ),
-  auth: [],
-});
+const tx = await TxBuilder.for(keypair, {
+  network: 'testnet',
+  sorobanUrl: 'https://soroban-testnet.stellar.org',
+})
+  .invokeContract({
+    contractId: 'CCLZ...',
+    functionName: 'increment',
+    args: [ScVal.u32(1)],
+  })
+  .build();
+
+await tx.sign(keypair).submit();
 ```
 
-See the [Roadmap](ROADMAP.md) for the planned Soroban release timeline.
+The `ScVal` object (exported from `stellar-flow`) provides type-safe helpers
+for constructing Soroban arguments: `ScVal.Address()`, `ScVal.i128()`,
+`ScVal.u64()`, `ScVal.Vec()`, `ScVal.Map()`, and more.
 
 ---
 

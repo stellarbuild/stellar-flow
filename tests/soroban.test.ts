@@ -1,4 +1,4 @@
-import { ScVal } from '../src/soroban';
+import { ScVal } from '../src';
 import { xdr, Keypair } from '@stellar/stellar-sdk';
 
 describe('ScVal Utilities', () => {

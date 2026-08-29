@@ -69,6 +69,7 @@ to the Stellar SDK and Horizon.
 src/
 ├── TxBuilder.ts       The core class — builder state, operation methods, build()
 ├── types.ts           All exported TypeScript interfaces
+├── soroban.ts         ScVal builder utilities exported as the `ScVal` object
 └── index.ts           Public API re-exports only
 ```
 

@@ -22,7 +22,7 @@
     "blockchain",
     "sdk",
     "web3",
-    "horizons"
+    "horizon"
   ],
   "publishConfig": {
     "access": "public"

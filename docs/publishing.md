@@ -175,6 +175,8 @@ dist/
 │   ├── index.js.map    Source map
 │   ├── TxBuilder.js
 │   ├── TxBuilder.d.ts
+│   ├── soroban.js
+│   ├── soroban.d.ts
 │   ├── types.js
 │   └── types.d.ts
 └── esm/
@@ -183,6 +185,8 @@ dist/
     ├── index.js.map
     ├── TxBuilder.js
     ├── TxBuilder.d.ts
+    ├── soroban.js
+    ├── soroban.d.ts
     ├── types.js
     └── types.d.ts
 ```

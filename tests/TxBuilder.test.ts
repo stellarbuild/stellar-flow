@@ -963,3 +963,59 @@ describe('describe()', () => {
     expect(desc.operations[1].params).toEqual({ destination: DEST, startingBalance: '5' });
   });
 });
+
+describe('TxBuilder.fromXDR()', () => {
+  it('restores a TxBuilder from an XDR string', async () => {
+    // 1. Build original transaction
+    const original = builder()
+      .setMemo('restore-me')
+      .setTimebounds({ minTime: 1000, maxTime: 2000 })
+      .addPayment({ destination: DEST, amount: '10', asset: 'XLM' })
+      .addChangeTrust({ asset: { code: 'USDC', issuer: DEST }, limit: '1000' });
+
+    const built = await original.build();
+    const xdr = built.toXDR();
+
+    // 2. Restore builder
+    const restored = TxBuilder.fromXDR(xdr, { network: 'testnet' });
+
+    // 3. Compare describe() outputs
+    const originalDesc = original.describe();
+    const restoredDesc = restored.describe();
+
+    // The stellar SDK parses amounts into full 7-decimal point precision strings
+    // (e.g. "10" -> "10.0000000"). We normalize our originalDesc expectation to match.
+    originalDesc.operations[0].params = {
+      ...(originalDesc.operations[0].params as Record<string, unknown>),
+      amount: '10.0000000',
+    } as any;
+    originalDesc.operations[1].params = {
+      ...(originalDesc.operations[1].params as Record<string, unknown>),
+      limit: '1000.0000000',
+    } as any;
+
+    // Note: parsed transactions may have slightly different structure for timebounds internally depending on string/number representation,
+    // but our describe() normalizes them.
+    expect(restoredDesc).toEqual(originalDesc);
+  });
+
+  it('throws TxBuilderValidationError on unsupported operation types', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const sdk = require('@stellar/stellar-sdk') as typeof import('@stellar/stellar-sdk');
+
+    // Create an XDR envelope with an accountMerge operation (unsupported by stellar-flow)
+    const tx = new sdk.TransactionBuilder(new sdk.Account(MOCK_SOURCE.publicKey(), '1'), {
+      fee: '100',
+      networkPassphrase: sdk.Networks.TESTNET,
+    })
+      .addOperation(sdk.Operation.accountMerge({ destination: DEST }))
+      .setTimeout(100)
+      .build();
+
+    const xdr = tx.toXDR();
+
+    expect(() => TxBuilder.fromXDR(xdr, { network: 'testnet' })).toThrow(
+      'Unsupported operation type in fromXDR: accountMerge',
+    );
+  });
+});

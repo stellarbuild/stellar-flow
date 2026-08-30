@@ -295,6 +295,61 @@ export class TxBuilder {
     return new TxBuilder(keypair, options);
   }
 
+  /**
+   * Reconstruct a TxBuilder from an existing XDR transaction envelope.
+   * Useful for resuming, inspecting, or adding operations to a transaction created elsewhere.
+   *
+   * @param xdr - The base64 XDR transaction envelope
+   * @param options - Builder options (network is required)
+   * @returns A restored TxBuilder instance
+   * @throws TxBuilderValidationError if an operation is not supported by stellar-flow
+   */
+  static fromXDR(xdrString: string, options: TxBuilderOptions): TxBuilder {
+    let tx;
+    try {
+      const passphrase = NETWORK_PASSPHRASES[options.network];
+      tx = new Transaction(xdrString, passphrase);
+    } catch (e: any) {
+      throw new TxBuilderValidationError(`Failed to parse XDR: ${e.message}`, 'xdr', xdrString);
+    }
+
+    // Reconstruct a public-only keypair for the source account
+    const sourceKeypair = Keypair.fromPublicKey(tx.source);
+
+    // Create builder with parsed fee (Stellar SDK tx.fee is total fee, options.fee is base fee)
+    const baseFee = Math.floor(parseInt(tx.fee, 10) / Math.max(1, tx.operations.length)).toString();
+
+    const builder = TxBuilder.for(sourceKeypair, {
+      ...options,
+      fee: baseFee,
+    });
+
+    if (tx.memo && tx.memo.type !== 'none') {
+      if (tx.memo.type === 'text' && tx.memo.value) {
+        builder.setMemo(tx.memo.value.toString('utf8'));
+      } else {
+        // Fallback for non-text memos which stellar-flow doesn't fully expose via builder yet,
+        // but we can just set the raw memo directly to avoid losing it.
+        builder.memo = tx.memo;
+      }
+    }
+
+    if (tx.timeBounds) {
+      // In stellar-sdk, timeBounds minTime and maxTime are strings
+      builder.timebounds = {
+        minTime: parseInt(tx.timeBounds.minTime, 10),
+        maxTime: parseInt(tx.timeBounds.maxTime, 10),
+      };
+    }
+
+    // Map operations
+    for (const op of tx.operations) {
+      mapParsedOperation(builder, op);
+    }
+
+    return builder;
+  }
+
   // ── operations ────────────────────────────────────────────────────────
 
   /**
@@ -832,5 +887,125 @@ export class TxBuilder {
     }
 
     return new BuiltTransactionImpl(finalTx, server);
+  }
+}
+
+// ── parsing helpers ────────────────────────────────────────────────────────
+
+/**
+ * Maps a parsed stellar-sdk operation object back to stellar-flow's builder methods.
+ * @param builder - The TxBuilder instance to add the operation to
+ * @param op - The parsed operation object from tx.operations
+ * @throws TxBuilderValidationError if the operation type is not supported
+ */
+function mapParsedOperation(builder: TxBuilder, op: any): void {
+  const mapAsset = (asset: Asset) =>
+    asset.isNative() ? 'XLM' : { code: asset.getCode(), issuer: asset.getIssuer() };
+
+  switch (op.type) {
+    case 'payment':
+      builder.addPayment({
+        destination: op.destination,
+        asset: mapAsset(op.asset),
+        amount: op.amount,
+      });
+      break;
+
+    case 'createAccount':
+      builder.addCreateAccount({
+        destination: op.destination,
+        startingBalance: op.startingBalance,
+      });
+      break;
+
+    case 'changeTrust':
+      builder.addChangeTrust({
+        asset: mapAsset(op.line) as { code: string; issuer: string },
+        limit: op.limit,
+      });
+      break;
+
+    case 'manageSellOffer':
+      builder.addManageOffer({
+        selling: mapAsset(op.selling),
+        buying: mapAsset(op.buying),
+        amount: op.amount,
+        price: op.price,
+        offerId: op.offerId,
+      });
+      break;
+
+    case 'manageBuyOffer':
+      builder.addManageBuyOffer({
+        selling: mapAsset(op.selling),
+        buying: mapAsset(op.buying),
+        amount: op.buyAmount,
+        price: op.price,
+        offerId: op.offerId,
+      });
+      break;
+
+    case 'pathPaymentStrictSend':
+      builder.addPathPayment({
+        destination: op.destination,
+        sendAsset: mapAsset(op.sendAsset),
+        sendAmount: op.sendAmount,
+        destAsset: mapAsset(op.destAsset),
+        destAmount: op.destMin,
+        path: op.path ? op.path.map(mapAsset) : [],
+      });
+      break;
+
+    case 'setOptions':
+      builder.addSetOptions({
+        inflationDest: op.inflationDest,
+        clearFlags: op.clearFlags,
+        setFlags: op.setFlags,
+        masterWeight: op.masterWeight,
+        lowThreshold: op.lowThreshold,
+        medThreshold: op.medThreshold,
+        highThreshold: op.highThreshold,
+        homeDomain: op.homeDomain,
+        signer: op.signer,
+      });
+      break;
+
+    case 'manageData':
+      builder.addManageData({
+        name: op.name,
+        value: op.value
+          ? typeof op.value === 'string'
+            ? op.value
+            : op.value.toString('utf8')
+          : undefined,
+      });
+      break;
+
+    case 'invokeHostFunction':
+      if (op.func && op.func.switch().name === 'hostFunctionTypeInvokeContract') {
+        const invokeArgs = op.func.value();
+        const contractId = Address.fromScAddress(invokeArgs.contractAddress()).toString();
+        const functionName = invokeArgs.functionName().toString('utf8');
+
+        builder.invokeContract({
+          contractId,
+          functionName,
+          args: invokeArgs.args(),
+        });
+      } else {
+        throw new TxBuilderValidationError(
+          `Unsupported invokeHostFunction type in fromXDR`,
+          'operation',
+          op,
+        );
+      }
+      break;
+
+    default:
+      throw new TxBuilderValidationError(
+        `Unsupported operation type in fromXDR: ${op.type}`,
+        'operation',
+        op,
+      );
   }
 }

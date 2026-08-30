@@ -63,7 +63,7 @@ To propose an addition to the roadmap, open a
 ## Planned
 
 ### v0.5.0 — Additional Classic Operations
-Target: Q4 2025 *(carried forward)*
+Target: Q3 2026 *(carried forward)*
 
 - 📋 `addPathPaymentStrictReceive()` — specify exact destination amount
 - 📋 `addCreateClaimableBalance()` — create claimable balance entries
@@ -72,14 +72,14 @@ Target: Q4 2025 *(carried forward)*
 - 📋 `addBeginSponsoringFutureReserves()` / `addEndSponsoringFutureReserves()`
 
 ### v0.6.0 — Fee Bump Transactions
-Target: Q1 2026
+Target: Q3 2026
 
 - 📋 Full `wrapInFeeBump()` implementation using `TransactionBuilder.buildFeeBumpTransaction()`
 - 📋 Fee bump XDR export
 - 📋 Fee bump submission via Horizon
 
 ### v0.7.0 — Developer Experience & Agent Reliability
-Target: Q2 2026
+Target: Q3 2026
 
 - 📋 `TxBuilder.fromXDR()` — reconstruct a builder from an existing XDR envelope, useful for resuming or inspecting transactions created elsewhere
 - 📋 `simulate()` method — dry-run Soroban transaction simulation without submitting; returns fee estimate and resource usage
@@ -91,7 +91,7 @@ Target: Q2 2026
   - `TxBuilderSubmitError` — wraps Horizon rejection responses with the raw `result_codes` object
 
 ### v0.8.0 — Agent & Automation Support
-Target: Q3 2026
+Target: Q4 2026
 
 This release is specifically motivated by the needs of AI agents, LLM-powered tools, and automated systems that interact with the Stellar network.
 
@@ -102,7 +102,7 @@ This release is specifically motivated by the needs of AI agents, LLM-powered to
 - 📋 Retry helpers — optional built-in exponential backoff for `.submit()` on transient Horizon failures
 
 ### v0.9.0 — Multi-Transaction Workflows
-Target: Q4 2026
+Target: Q1 2027
 
 - 📋 `TxSequence` — a higher-level construct for chaining multiple dependent transactions in order:
   - Each step can depend on the result of the previous (e.g., use the created account's ID in the next transaction)
@@ -111,7 +111,7 @@ Target: Q4 2026
 - 📋 Conditional transaction templates — pre-define a transaction structure with placeholder values to be filled at execution time
 
 ### v1.0.0 — Stable Release
-Target: Q1 2027
+Target: Q2 2027
 
 - 📋 Stable, locked public API — no breaking changes after v1.0
 - 📋 Full Soroban operation coverage

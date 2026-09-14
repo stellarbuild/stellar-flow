@@ -1,31 +1,29 @@
 import { useState } from 'react';
-import { API_DOCS } from '../data/apiDocs';
+import { LIBRARY_DOCS, type LibraryMethod } from '../data/apiDocs';
 import { CodeBlock } from '../components/CodeBlock';
 import { Search, ChevronRight } from 'lucide-react';
 
 export function ArchivePage() {
-  const [selectedEndpointId, setSelectedEndpointId] = useState<string>(API_DOCS[0].id);
-  const [activeLang, setActiveLang] = useState<'curl' | 'typescript' | 'nodejs' | 'python'>('typescript');
+  const [selectedMethodId, setSelectedMethodId] = useState<string>(LIBRARY_DOCS[0].id);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const currentEndpoint =
-    API_DOCS.find((ep) => ep.id === selectedEndpointId) || API_DOCS[0];
+  const currentMethod: LibraryMethod =
+    LIBRARY_DOCS.find((m) => m.id === selectedMethodId) || LIBRARY_DOCS[0];
 
-  // Group endpoints by category
-  const categories = Array.from(new Set(API_DOCS.map((ep) => ep.category)));
+  // Group methods by category
+  const categories = Array.from(new Set(LIBRARY_DOCS.map((m) => m.category)));
 
-  const filteredEndpoints = API_DOCS.filter(
-    (ep) =>
-      ep.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ep.path.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ep.category.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredMethods = LIBRARY_DOCS.filter(
+    (m) =>
+      m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <div className="anim-fade-in" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 64px)' }}>
       <div style={{ display: 'flex', flex: 1, borderTop: '1px solid var(--c-stroke)' }}>
         {/* ============================================================
-            LEFT COLUMN: API ENDPOINT NAVIGATION (Zip 7)
+            LEFT COLUMN: API NAVIGATION
             ============================================================ */}
         <aside
           style={{
@@ -55,7 +53,7 @@ export function ArchivePage() {
               <Search size={14} style={{ color: 'var(--c-outline)' }} />
               <input
                 type="text"
-                placeholder="Filter endpoints..."
+                placeholder="Filter methods..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
@@ -74,8 +72,8 @@ export function ArchivePage() {
           {/* Categorized List */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24, overflowY: 'auto' }}>
             {categories.map((cat) => {
-              const endpointsInCat = filteredEndpoints.filter((ep) => ep.category === cat);
-              if (endpointsInCat.length === 0) return null;
+              const methodsInCat = filteredMethods.filter((m) => m.category === cat);
+              if (methodsInCat.length === 0) return null;
 
               return (
                 <div key={cat} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -85,12 +83,12 @@ export function ArchivePage() {
                     </span>
                   </div>
 
-                  {endpointsInCat.map((ep) => {
-                    const isSelected = ep.id === selectedEndpointId;
+                  {methodsInCat.map((m) => {
+                    const isSelected = m.id === selectedMethodId;
                     return (
                       <button
-                        key={ep.id}
-                        onClick={() => setSelectedEndpointId(ep.id)}
+                        key={m.id}
+                        onClick={() => setSelectedMethodId(m.id)}
                         style={{
                           display: 'flex',
                           alignItems: 'center',
@@ -114,17 +112,12 @@ export function ArchivePage() {
                             style={{
                               fontSize: 10,
                               fontWeight: 700,
-                              color:
-                                ep.method === 'GET'
-                                  ? 'var(--c-accent)'
-                                  : ep.method === 'POST'
-                                  ? 'var(--c-success)'
-                                  : 'var(--c-error)'
+                              color: 'var(--c-accent)'
                             }}
                           >
-                            {ep.method}
+                            fn
                           </span>
-                          <span>{ep.title}</span>
+                          <span>{m.name}</span>
                         </div>
                         {isSelected && <ChevronRight size={14} />}
                       </button>
@@ -137,7 +130,7 @@ export function ArchivePage() {
         </aside>
 
         {/* ============================================================
-            MIDDLE COLUMN: ENDPOINT DOCUMENTATION (Zip 7)
+            MIDDLE COLUMN: DOCUMENTATION
             ============================================================ */}
         <main
           style={{
@@ -147,6 +140,7 @@ export function ArchivePage() {
             overflowY: 'auto'
           }}
           className="anim-slide-up"
+          key={currentMethod.id} // Forces re-render animation on selection
         >
           {/* Header */}
           <div style={{ borderBottom: '1px solid var(--c-stroke)', paddingBottom: 28, marginBottom: 32 }}>
@@ -163,29 +157,37 @@ export function ArchivePage() {
                   color: 'var(--c-ink)'
                 }}
               >
-                {currentEndpoint.method}
+                method
               </span>
               <h1
                 className="font-headline-lg font-mono"
                 style={{ fontSize: 24, color: 'var(--c-ink)' }}
               >
-                {currentEndpoint.path}
+                {currentMethod.name}
               </h1>
+            </div>
+            
+            <div style={{ marginBottom: 20 }}>
+              <CodeBlock 
+                code={currentMethod.signature} 
+                language="typescript" 
+                filename="Signature" 
+              />
             </div>
 
             <p className="font-body-lg" style={{ color: 'var(--c-ink-dim)', lineHeight: '26px' }}>
-              {currentEndpoint.description}
+              {currentMethod.description}
             </p>
           </div>
 
-          {/* Path Parameters */}
-          {currentEndpoint.pathParams.length > 0 && (
+          {/* Parameters */}
+          {currentMethod.params.length > 0 && (
             <div style={{ marginBottom: 40 }}>
               <h2 className="font-headline-md" style={{ color: 'var(--c-ink)', marginBottom: 16 }}>
-                Path Parameters
+                Parameters
               </h2>
               <div style={{ borderTop: '1px solid var(--c-stroke)' }}>
-                {currentEndpoint.pathParams.map((param) => (
+                {currentMethod.params.map((param) => (
                   <div
                     key={param.name}
                     style={{
@@ -195,7 +197,7 @@ export function ArchivePage() {
                       gap: 24
                     }}
                   >
-                    <div style={{ width: 160, flexShrink: 0 }}>
+                    <div style={{ width: 180, flexShrink: 0 }}>
                       <span className="font-mono" style={{ fontSize: 13, fontWeight: 700, color: 'var(--c-ink)' }}>
                         {param.name}
                       </span>
@@ -217,51 +219,13 @@ export function ArchivePage() {
             </div>
           )}
 
-          {/* Query Parameters */}
-          {currentEndpoint.queryParams.length > 0 && (
-            <div style={{ marginBottom: 40 }}>
-              <h2 className="font-headline-md" style={{ color: 'var(--c-ink)', marginBottom: 16 }}>
-                Query Parameters
-              </h2>
-              <div style={{ borderTop: '1px solid var(--c-stroke)' }}>
-                {currentEndpoint.queryParams.map((param) => (
-                  <div
-                    key={param.name}
-                    style={{
-                      display: 'flex',
-                      padding: '16px 0',
-                      borderBottom: '1px solid var(--c-stroke)',
-                      gap: 24
-                    }}
-                  >
-                    <div style={{ width: 160, flexShrink: 0 }}>
-                      <span className="font-mono" style={{ fontSize: 13, fontWeight: 700, color: 'var(--c-ink)' }}>
-                        {param.name}
-                      </span>
-                      <div className="font-mono" style={{ fontSize: 11, color: 'var(--c-outline)', marginTop: 2 }}>
-                        {param.type}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="font-body-md" style={{ color: 'var(--c-ink-mid)' }}>
-                        {param.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Responses Table */}
+          {/* Return Value */}
           <div>
             <h2 className="font-headline-md" style={{ color: 'var(--c-ink)', marginBottom: 16 }}>
-              Response
+              Returns
             </h2>
             <div style={{ borderTop: '1px solid var(--c-stroke)' }}>
-              {currentEndpoint.responses.map((resp) => (
                 <div
-                  key={resp.status}
                   style={{
                     display: 'flex',
                     padding: '16px 0',
@@ -270,31 +234,30 @@ export function ArchivePage() {
                     alignItems: 'flex-start'
                   }}
                 >
-                  <div style={{ width: 160, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 180, flexShrink: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span
                       className="status-square"
                       style={{
-                        backgroundColor: resp.status === 200 ? 'var(--c-accent)' : 'transparent',
-                        borderColor: resp.status === 200 ? 'transparent' : 'var(--c-outline)'
+                        backgroundColor: 'var(--c-accent)',
+                        borderColor: 'transparent'
                       }}
                     />
                     <span className="font-mono" style={{ fontSize: 13, fontWeight: 700, color: 'var(--c-ink)' }}>
-                      {resp.statusText}
+                      {currentMethod.returns.type}
                     </span>
                   </div>
                   <div>
                     <p className="font-body-md" style={{ color: 'var(--c-ink-mid)' }}>
-                      {resp.description}
+                      {currentMethod.returns.description}
                     </p>
                   </div>
                 </div>
-              ))}
             </div>
           </div>
         </main>
 
         {/* ============================================================
-            RIGHT COLUMN: CODE EXAMPLES & RESPONSE PAYLOAD (Zip 7)
+            RIGHT COLUMN: CODE EXAMPLES
             ============================================================ */}
         <aside
           style={{
@@ -310,7 +273,6 @@ export function ArchivePage() {
             overflowY: 'auto'
           }}
         >
-          {/* Request Code Snippets */}
           <div>
             <div
               style={{
@@ -323,63 +285,17 @@ export function ArchivePage() {
               }}
             >
               <span className="font-label-caps" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                REQUEST SPECIFICATION
+                USAGE EXAMPLE
               </span>
-
-              {/* Language Switcher */}
-              <div style={{ display: 'flex', gap: 6 }}>
-                {(['typescript', 'curl', 'nodejs', 'python'] as const).map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => setActiveLang(lang)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      fontFamily: 'var(--f-mono)',
-                      fontSize: 11,
-                      color: activeLang === lang ? '#ffffff' : 'rgba(255, 255, 255, 0.45)',
-                      borderBottom: activeLang === lang ? '1px solid var(--c-accent)' : '1px solid transparent',
-                      padding: '2px 4px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    {lang === 'typescript' ? 'TS' : lang.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <CodeBlock
-              code={currentEndpoint.snippets[activeLang]}
-              language={activeLang}
-              filename={`${currentEndpoint.id}.${activeLang === 'python' ? 'py' : activeLang === 'curl' ? 'sh' : 'ts'}`}
-            />
-          </div>
-
-          {/* Response Payload */}
-          <div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                paddingBottom: 10,
-                marginBottom: 16
-              }}
-            >
-              <span className="font-label-caps" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
-                RESPONSE PAYLOAD
-              </span>
-              <span className="badge-swiss badge-success" style={{ fontSize: 10 }}>
-                200 OK
+              <span className="font-mono" style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                TypeScript
               </span>
             </div>
 
             <CodeBlock
-              code={JSON.stringify(currentEndpoint.responses[0].body, null, 2)}
-              language="json"
-              filename="response_payload.json"
+              code={currentMethod.snippets.typescript}
+              language="typescript"
+              filename="example.ts"
             />
           </div>
         </aside>

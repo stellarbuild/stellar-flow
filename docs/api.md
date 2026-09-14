@@ -351,19 +351,24 @@ const tx = await TxBuilder.for(keypair, {
 
 ---
 
-### `.wrapInFeeBump(feeSource, fee?)` *(Validation stub — v0.6 planned)*
+### `.wrapInFeeBump(feeSource, fee?)` *(Not yet implemented — v0.6.0 planned)*
 
-Validates fee bump parameters but currently throws during `build()`. Full
-implementation is planned for v0.6.0.
+> [!WARNING]
+> This method is **not yet implemented**. Calling it will **always throw synchronously**,
+> regardless of the arguments passed. Full fee bump support is planned for v0.6.0.
+> For now, use [`TransactionBuilder.buildFeeBumpTransaction()`](https://stellar.github.io/js-stellar-sdk/)
+> from `@stellar/stellar-sdk` directly.
 
 ```typescript
 wrapInFeeBump(feeSource: string, fee?: string): this
+// Always throws: 'wrapInFeeBump() is not yet implemented. Full fee bump support
+//                is planned for v0.6.0. See ROADMAP.md ...'
 ```
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
-| `feeSource` | `string` | ✅ | Public key of the fee-paying account |
-| `fee` | `string` | ❌ | Fee to pay in stroops (default: base fee) |
+| `feeSource` | `string` | — | *(ignored — method throws before use)* |
+| `fee` | `string` | — | *(ignored — method throws before use)* |
 
 ---
 

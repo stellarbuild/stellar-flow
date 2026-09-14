@@ -277,8 +277,6 @@ export class TxBuilder {
   private descriptors: OperationDescription[] = [];
   private memo?: Memo;
   private timebounds?: { minTime: number; maxTime: number };
-  private feeBumpSource?: string;
-  private feeBumpFee?: string;
 
   private constructor(keypair: Keypair, options: TxBuilderOptions) {
     this.keypair = keypair;
@@ -742,24 +740,20 @@ export class TxBuilder {
   }
 
   /**
-   * Wraps the transaction in a fee bump transaction
+   * Wraps the transaction in a fee bump transaction.
+   *
+   * **Not yet implemented.** Full support is planned for v0.6.0 — see ROADMAP.md.
+   * Calling this method will always throw synchronously.
+   *
    * @param feeSource - Public key of the account paying the fee
    * @param fee - Fee to pay (in stroops), defaults to base fee
-   * @returns This instance for chaining
-   * @throws Error if parameters are invalid
+   * @throws Error always — feature not yet implemented
    */
-  wrapInFeeBump(feeSource: string, fee?: string): this {
-    validateAddress(feeSource, 'fee source');
-
-    if (fee !== undefined) {
-      validateAmount(fee, 'fee');
-    }
-
-    // Store fee bump parameters to be applied during build
-    this.feeBumpSource = feeSource;
-    this.feeBumpFee = fee;
-
-    return this;
+  wrapInFeeBump(_feeSource: string, _fee?: string): this {
+    throw new Error(
+      'wrapInFeeBump() is not yet implemented. Full fee bump support is planned for v0.6.0. ' +
+        'See ROADMAP.md or use TransactionBuilder.buildFeeBumpTransaction() from @stellar/stellar-sdk directly.',
+    );
   }
 
   /**
@@ -876,14 +870,6 @@ export class TxBuilder {
       } catch (e: any) {
         throw new TxBuilderNetworkError(`Failed to prepare Soroban transaction: ${e.message}`);
       }
-    }
-
-    // Note: Fee bump implementation requires SDK compatibility fixes
-    // For now, this validates inputs and provides structure
-    if (this.feeBumpSource) {
-      throw new Error(
-        'Fee bump transaction requires SDK compatibility fixes. Use Stellar SDK directly for fee bump operations.',
-      );
     }
 
     return new BuiltTransactionImpl(finalTx, server);

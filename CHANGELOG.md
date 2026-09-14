@@ -8,6 +8,19 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [Unreleased]
+
+### Changed
+- `wrapInFeeBump()` now throws **synchronously at the call site** instead of deferring the error
+  to `build()`. This aligns the method with the library's established eager-validation design
+  (ADR-002) and surfaces the "not yet implemented" state at the point where the call is made,
+  not after an async round-trip to Horizon. This is a **breaking change** for any code that
+  called `wrapInFeeBump()` and expected `build()` to throw — update such code to wrap the
+  `wrapInFeeBump()` call in a `try/catch` block instead.
+
+### Removed
+- Internal `feeBumpSource` and `feeBumpFee` fields from `TxBuilder` (were unused dead state).
+
 ---
 
 ## [0.4.0] — 2026-08-29

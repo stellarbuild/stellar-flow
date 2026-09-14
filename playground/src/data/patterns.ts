@@ -34,12 +34,13 @@ export const ARCHITECTURAL_PATTERNS: Pattern[] = [
     latencyImpact: '+12ms per batch',
     beforeDesc: 'Sequential N-transactions, high base fees, unbounded block contention.',
     afterDesc: 'Single compressed batch, deterministic single-slot commitment, 78% gas reduction.',
-    stellarFlowEquivalent: `const batchTx = await StellarFlow.init({ network: 'TESTNET' })
-  .source(relayerKeypair)
-  .payment({ destination: 'G_USER_A', amount: '50.0' })
-  .payment({ destination: 'G_USER_B', amount: '75.0' })
-  .manageData({ name: 'batch_merkle_root', value: merkleRoot })
-  .setTimeout(30)
+    stellarFlowEquivalent: `import { TxBuilder } from '@stellarbuild/stellar-flow';
+
+const batchTx = await TxBuilder.for(relayerKeypair, { network: 'testnet' })
+  .addPayment({ destination: 'G_USER_A', amount: '50.0', asset: 'XLM' })
+  .addPayment({ destination: 'G_USER_B', amount: '75.0', asset: 'XLM' })
+  .addManageData({ name: 'batch_merkle_root', value: merkleRoot })
+  .setTimebounds({ maxTime: '+30s' })
   .build();`
   },
   {
@@ -67,12 +68,16 @@ fn verify_channel_update(
     latencyImpact: '< 1ms bilateral delta',
     beforeDesc: 'Every tick touches global state storage, high gas volatility, throughput bottlenecks.',
     afterDesc: 'Off-chain cryptographically signed transitions with atomic on-chain dispute finality.',
-    stellarFlowEquivalent: `const settleChannelTx = await StellarFlow.init()
-  .source(channelManager)
+    stellarFlowEquivalent: `import { TxBuilder, ScVal } from '@stellarbuild/stellar-flow';
+
+const settleChannelTx = await TxBuilder.for(channelManager, {
+  network: 'testnet',
+  sorobanUrl: 'https://soroban-testnet.stellar.org',
+})
   .invokeContract({
     contractId: 'C_CHANNEL_REGISTRY',
     functionName: 'settle_dispute',
-    args: [ScVal.u64(finalNonce), ScVal.i64(balanceAlice), ScVal.i64(balanceBob)]
+    args: [ScVal.u64(finalNonce), ScVal.i128(balanceAlice), ScVal.i128(balanceBob)]
   })
   .build();`
   },
@@ -99,9 +104,10 @@ fn verify_channel_update(
     latencyImpact: '0ms authorization delta',
     beforeDesc: 'Global ACL lookups, high latency, tight coupling, brittle permission matrices.',
     afterDesc: 'Opaque token passing, stateless validation, decoupled zero-trust execution.',
-    stellarFlowEquivalent: `const delegateTx = await StellarFlow.init()
-  .source(operatorKeypair)
-  .setOptions({
+    stellarFlowEquivalent: `import { TxBuilder } from '@stellarbuild/stellar-flow';
+
+const delegateTx = await TxBuilder.for(operatorKeypair, { network: 'testnet' })
+  .addSetOptions({
     signer: { ed25519PublicKey: 'G_DELEGATE', weight: 1 },
     masterWeight: 2,
     lowThreshold: 1,

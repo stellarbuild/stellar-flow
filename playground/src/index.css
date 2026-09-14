@@ -275,18 +275,55 @@ body {
   100% { transform: translateY(1000%); }
 }
 
+@keyframes orbitSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes orbitSpinReverse {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.65; }
+  50%       { opacity: 1; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: none; }
+  50%       { box-shadow: var(--glow); }
+}
+
+@keyframes typewriterBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes accentIn {
+  from { transform: scaleX(0); opacity: 0; }
+  to   { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes cardLift {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-3px); }
+}
+
 .anim-slide-up {
-  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  opacity: 0;
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .anim-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
+  opacity: 0;
+  animation: fadeIn 0.35s ease-out forwards;
 }
 
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.12s; }
-.stagger-3 { animation-delay: 0.20s; }
-.stagger-4 { animation-delay: 0.28s; }
+.stagger-1 { animation-delay: 0.06s; }
+.stagger-2 { animation-delay: 0.14s; }
+.stagger-3 { animation-delay: 0.22s; }
+.stagger-4 { animation-delay: 0.30s; }
 
 /* ============================================================
    LAYOUT SYSTEM (12-Column Grid & 80px Spacing)
@@ -485,6 +522,13 @@ body {
   background-color: var(--c-accent);
   border-color: var(--c-accent);
   color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-swiss-primary:active {
+  transform: scale(0.97);
+  box-shadow: none;
 }
 
 .btn-swiss-secondary {
@@ -509,6 +553,11 @@ body {
 .btn-swiss-secondary:hover {
   background-color: var(--c-ink);
   color: var(--c-bg);
+  transform: translateY(-1px);
+}
+
+.btn-swiss-secondary:active {
+  transform: scale(0.97);
 }
 
 .btn-swiss-accent {
@@ -546,11 +595,17 @@ body {
   border-radius: var(--r-sm);
   padding: 32px;
   position: relative;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .swiss-card:hover {
   border-color: var(--c-outline);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="dark"] .swiss-card:hover {
+  box-shadow: 0 8px 32px rgba(56, 189, 248, 0.1);
 }
 
 .swiss-card-accent-edge {

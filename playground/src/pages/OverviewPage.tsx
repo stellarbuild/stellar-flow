@@ -16,23 +16,52 @@ export function OverviewPage({ onNavigate }: OverviewPageProps) {
     setTimeout(() => setCopiedInstall(false), 2000);
   };
 
-  const traditionalSdkCode = `const client = new Client();
-client.setOptions({ timeout: 5000 });
-client.authenticate('token');
+  const traditionalSdkCode = `// Without stellar-flow — verbose Stellar SDK
+import { Keypair, TransactionBuilder, Networks,
+  BASE_FEE, Operation, Asset } from '@stellar/stellar-sdk';
+import { Horizon } from '@stellar/stellar-sdk';
 
-const req = client.createRequest('GET', '/users');
-req.setQuery({ limit: 10 });
+const keypair = Keypair.fromSecret('S...');
+const server = new Horizon.Server(
+  'https://horizon-testnet.stellar.org'
+);
 
-client.execute(req)
-  .then(res => console.log(res.data))
-  .catch(err => console.error(err));`;
+const account = await server.loadAccount(keypair.publicKey());
 
-  const stellarFlowCode = `// Minimalist, fluent, type-safe
-await flow
-  .users()
-  .limit(10)
-  .timeout(5000)
-  .fetch();`;
+const tx = new TransactionBuilder(account, {
+  fee: BASE_FEE,
+  networkPassphrase: Networks.TESTNET,
+})
+  .addOperation(
+    Operation.payment({
+      destination: 'GDEST...',
+      asset: Asset.native(),
+      amount: '100',
+    })
+  )
+  .setTimeout(30)
+  .build();
+
+tx.sign(keypair);
+const result = await server.submitTransaction(tx);`;
+
+  const stellarFlowCode = `// With stellar-flow — fluent & type-safe
+import { TxBuilder } from '@stellarbuild/stellar-flow';
+import { Keypair } from '@stellar/stellar-sdk';
+
+const keypair = Keypair.fromSecret('S...');
+
+const builtTx = await TxBuilder
+  .for(keypair, { network: 'testnet' })
+  .addPayment({
+    destination: 'GDEST...',
+    amount: '100',
+    asset: 'XLM',
+  })
+  .setTimebounds({ maxTime: '+30s' })
+  .build();
+
+const result = await builtTx.sign(keypair).submit();`;
 
   return (
     <div className="anim-fade-in">

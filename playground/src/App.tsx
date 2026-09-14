@@ -61,7 +61,7 @@ export default function App() {
         onToggleTheme={handleToggleTheme}
       />
 
-      <main style={{ flex: 1 }}>
+      <main style={{ flex: 1 }} key={activeTab}>
         {activeTab === 'overview' && <OverviewPage onNavigate={handleNavigate} />}
         {activeTab === 'philosophy' && <PhilosophyPage onNavigate={handleNavigate} />}
         {activeTab === 'systems' && <SystemsPage />}

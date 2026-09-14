@@ -87,7 +87,7 @@ export function Navbar({ activeTab, onSelectTab, theme, onToggleTheme }: NavbarP
 
           {/* GitHub Repo */}
           <a
-            href="https://github.com/stellarbuild/stellar-tx-builder"
+            href="https://github.com/stellarbuild/stellar-flow"
             target="_blank"
             rel="noopener noreferrer"
             className="theme-toggle-btn"

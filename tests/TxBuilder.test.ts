@@ -722,35 +722,25 @@ describe('invokeContract()', () => {
 });
 
 describe('wrapInFeeBump()', () => {
-  it('validates fee source address', () => {
-    const b = builder();
-    expect(b.wrapInFeeBump(DEST)).toBe(b);
+  it('throws immediately — feature not yet implemented', () => {
+    expect(() => builder().wrapInFeeBump(DEST)).toThrow('wrapInFeeBump() is not yet implemented');
   });
 
-  it('validates fee source with custom fee', () => {
-    const b = builder();
-    expect(b.wrapInFeeBump(DEST, '200')).toBe(b);
-  });
-
-  it('throws on invalid fee source address', () => {
-    expect(() => builder().wrapInFeeBump('not-an-address')).toThrow('Invalid Stellar address');
-  });
-
-  it('throws on invalid fee amount', () => {
-    expect(() => builder().wrapInFeeBump(DEST, '0')).toThrow('must be greater than 0');
-  });
-
-  it('throws on negative fee amount', () => {
-    expect(() => builder().wrapInFeeBump(DEST, '-100')).toThrow('must be greater than 0');
-  });
-
-  it('throws during build() — not yet fully implemented', async () => {
-    const b = builder()
-      .addPayment({ destination: DEST, amount: '10', asset: 'XLM' })
-      .wrapInFeeBump(DEST);
-    await expect(b.build()).rejects.toThrow(
-      'Fee bump transaction requires SDK compatibility fixes',
+  it('throws immediately even with a custom fee', () => {
+    expect(() => builder().wrapInFeeBump(DEST, '200')).toThrow(
+      'wrapInFeeBump() is not yet implemented',
     );
+  });
+
+  it('throws immediately on an invalid fee source address', () => {
+    expect(() => builder().wrapInFeeBump('not-an-address')).toThrow(
+      'wrapInFeeBump() is not yet implemented',
+    );
+  });
+
+  it('throw message references v0.6.0 and the roadmap', () => {
+    expect(() => builder().wrapInFeeBump(DEST)).toThrow('v0.6.0');
+    expect(() => builder().wrapInFeeBump(DEST)).toThrow('ROADMAP.md');
   });
 });
 

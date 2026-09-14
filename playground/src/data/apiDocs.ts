@@ -93,23 +93,31 @@ export const API_DOCS: ApiEndpoint[] = [
       curl: `curl -X GET "https://api.stellarflow.dev/v1/users/usr_9b32c58?expand=organization" \\
   -H "Authorization: Bearer sk_test_123..." \\
   -H "Content-Type: application/json"`,
-      typescript: `import { StellarFlow } from '@stellarbuild/stellar-flow';
+      typescript: `import { TxBuilder } from '@stellarbuild/stellar-flow';
+import { Keypair } from '@stellar/stellar-sdk';
 
-const user = await StellarFlow.api.users.get('usr_9b32c58', {
-  expand: ['organization', 'trustlines']
-});
-
-console.log(user.public_key);`,
+const keypair = Keypair.fromSecret('S...');
+const tx = await TxBuilder.for(keypair, { network: 'testnet' })
+  .addPayment({ destination: 'usr_9b32c58_public_key', amount: '10', asset: 'XLM' })
+  .build();
+const result = await tx.sign(keypair).submit();
+console.log(result.hash);`,
       nodejs: `const { ApiClient, Configuration } = require('@stellarflow/sdk');
 
 const client = new ApiClient(new Configuration({ apiKey: 'sk_test_123...' }));
 const user = await client.users.get('usr_9b32c58', { expand: ['organization'] });
 console.log(user);`,
-      python: `from stellarflow import StellarFlowClient
+      python: `from stellar_sdk import Keypair, Server, TransactionBuilder, Network, Asset
 
-client = StellarFlowClient(api_key="sk_test_123...")
-user = client.users.get("usr_9b32c58", expand=["organization"])
-print(user.name, user.public_key)`
+keypair = Keypair.from_secret("S...")
+server = Server("https://horizon-testnet.stellar.org")
+account = server.load_account(keypair.public_key)
+tx = (TransactionBuilder(account, Network.TESTNET_NETWORK_PASSPHRASE)
+    .append_payment_op("usr_9b32c58_public_key", Asset.native(), "10")
+    .build())
+tx.sign(keypair)
+response = server.submit_transaction(tx)
+print(response["hash"])`
     }
   },
   {
@@ -152,12 +160,15 @@ print(user.name, user.public_key)`
       curl: `curl -X POST "https://api.stellarflow.dev/v1/auth/tokens" \\
   -H "Content-Type: application/json" \\
   -d '{"public_key": "GBX6Y...4ZW3", "ttl_seconds": 7200}'`,
-      typescript: `import { StellarFlow } from '@stellarbuild/stellar-flow';
+      typescript: `import { TxBuilder } from '@stellarbuild/stellar-flow';
+import { Keypair } from '@stellar/stellar-sdk';
 
-const token = await StellarFlow.api.auth.createToken({
-  publicKey: 'GBX6Y...4ZW3',
-  ttlSeconds: 7200
-});`,
+const keypair = Keypair.fromSecret('S...');
+// Set a 2-hour validity window for the transaction
+const tx = await TxBuilder.for(keypair, { network: 'testnet' })
+  .addPayment({ destination: 'GBX6Y...4ZW3', amount: '1', asset: 'XLM' })
+  .setTimebounds({ maxTime: '+2h' })
+  .build();`,
       nodejs: `const token = await client.auth.createToken({ publicKey: 'GBX6Y...4ZW3' });`,
       python: `token = client.auth.create_token(public_key="GBX6Y...4ZW3", ttl_seconds=7200)`
     }
@@ -192,7 +203,15 @@ const token = await StellarFlow.api.auth.createToken({
     snippets: {
       curl: `curl -X DELETE "https://api.stellarflow.dev/v1/auth/tokens/tok_01h8v9w3" \\
   -H "Authorization: Bearer sk_test_123..."`,
-      typescript: `await StellarFlow.api.auth.revokeToken('tok_01h8v9w3');`,
+      typescript: `import { TxBuilder } from '@stellarbuild/stellar-flow';
+import { Keypair } from '@stellar/stellar-sdk';
+
+const keypair = Keypair.fromSecret('S...');
+// Revoke a signer by setting its weight to 0
+const tx = await TxBuilder.for(keypair, { network: 'testnet' })
+  .addSetOptions({ signer: { ed25519PublicKey: 'G_DELEGATE', weight: 0 } })
+  .build();
+await tx.sign(keypair).submit();`,
       nodejs: `await client.auth.revokeToken('tok_01h8v9w3');`,
       python: `client.auth.revoke_token('tok_01h8v9w3')`
     }
@@ -236,7 +255,16 @@ const token = await StellarFlow.api.auth.createToken({
     ],
     snippets: {
       curl: `curl -X GET "https://api.stellarflow.dev/v1/users?limit=10" -H "Authorization: Bearer sk_test_123..."`,
-      typescript: `const users = await StellarFlow.api.users.list({ limit: 10 });`,
+      typescript: `import { TxBuilder } from '@stellarbuild/stellar-flow';
+import { Keypair } from '@stellar/stellar-sdk';
+
+const keypair = Keypair.fromSecret('S...');
+// Multi-payment batch — all operations in a single transaction
+const tx = await TxBuilder.for(keypair, { network: 'testnet' })
+  .addPayment({ destination: 'G_USER_01', amount: '10', asset: 'XLM' })
+  .addPayment({ destination: 'G_USER_02', amount: '20', asset: 'XLM' })
+  .build();
+await tx.sign(keypair).submit();`,
       nodejs: `const users = await client.users.list({ limit: 10 });`,
       python: `users = client.users.list(limit=10)`
     }
@@ -273,7 +301,20 @@ const token = await StellarFlow.api.auth.createToken({
     ],
     snippets: {
       curl: `curl -X GET "https://api.stellarflow.dev/v1/organizations/org_7f11a92" -H "Authorization: Bearer sk_test_123..."`,
-      typescript: `const org = await StellarFlow.api.orgs.get('org_7f11a92');`,
+      typescript: `import { TxBuilder } from '@stellarbuild/stellar-flow';
+import { Keypair } from '@stellar/stellar-sdk';
+
+const keypair = Keypair.fromSecret('S...');
+// Set organization home domain and signer policy
+const tx = await TxBuilder.for(keypair, { network: 'testnet' })
+  .addSetOptions({
+    homeDomain: 'acmecorp.com',
+    lowThreshold: 1,
+    medThreshold: 2,
+    highThreshold: 2,
+  })
+  .build();
+await tx.sign(keypair).submit();`,
       nodejs: `const org = await client.orgs.get('org_7f11a92');`,
       python: `org = client.orgs.get("org_7f11a92")`
     }
@@ -308,7 +349,18 @@ const token = await StellarFlow.api.auth.createToken({
     ],
     snippets: {
       curl: `curl -X GET "https://api.stellarflow.dev/v1/organizations/org_7f11a92/members" -H "Authorization: Bearer sk_test_123..."`,
-      typescript: `const members = await StellarFlow.api.orgs.listMembers('org_7f11a92');`,
+      typescript: `import { TxBuilder } from '@stellarbuild/stellar-flow';
+import { Keypair } from '@stellar/stellar-sdk';
+
+const keypair = Keypair.fromSecret('S...');
+// Add a new co-signer to the account
+const tx = await TxBuilder.for(keypair, { network: 'testnet' })
+  .addSetOptions({
+    signer: { ed25519PublicKey: 'G_NEW_MEMBER', weight: 1 },
+    medThreshold: 2,
+  })
+  .build();
+await tx.sign(keypair).submit();`,
       nodejs: `const members = await client.orgs.listMembers('org_7f11a92');`,
       python: `members = client.orgs.list_members("org_7f11a92")`
     }

@@ -85,34 +85,39 @@ export function SystemsPage() {
   // Generate Type-Safe TypeScript Code
   const generatedCode = useMemo(() => {
     const lines = [
-      `import { StellarFlow, Asset } from '@stellarbuild/stellar-flow';`,
+      `import { TxBuilder } from '@stellarbuild/stellar-flow';`,
+      `import { Keypair } from '@stellar/stellar-sdk';`,
       ``,
-      `// Initialize builder with network configuration`,
-      `const tx = await StellarFlow.init({ network: '${network}' })`,
-      `  .source('${sourceKey.slice(0, 16)}...')`,
-      `  .setFee(${fee})`,
-      `  .setTimeout(${timeoutSecs})`
+      `// Source keypair — load from secure storage in production`,
+      `const keypair = Keypair.fromSecret('S...');`,
+      ``,
+      `const builtTx = await TxBuilder.for(keypair, {`,
+      `  network: '${network}',`,
+      `  fee: '${fee}',`,
+      ...(operations.some(op => op.type === 'contract')
+        ? [`  sorobanUrl: 'https://soroban-testnet.stellar.org',`]
+        : []),
+      `})`,
     ];
 
     operations.forEach((op) => {
       if (op.type === 'payment') {
-        lines.push(`  .payment({`);
+        lines.push(`  .addPayment({`);
         lines.push(`    destination: '${op.destination || 'G...'}',`);
         lines.push(`    amount: '${op.amount || '0'}',`);
         lines.push(
-          `    asset: ${op.asset === 'native' ? 'Asset.native()' : `Asset.create('${op.asset}', 'G_ISSUER')`}`
+          `    asset: ${op.asset === 'native' ? `'XLM'` : `{ code: '${op.asset}', issuer: 'G_ISSUER' }`}`
         );
         lines.push(`  })`);
       } else if (op.type === 'trustline') {
-        lines.push(`  .changeTrust({`);
-        lines.push(`    asset: Asset.create('${op.asset || 'USDC'}', 'G_ISSUER'),`);
+        lines.push(`  .addChangeTrust({`);
+        lines.push(`    asset: { code: '${op.asset || 'USDC'}', issuer: 'G_ISSUER' },`);
         lines.push(`    limit: '1000000'`);
         lines.push(`  })`);
       } else if (op.type === 'escrow') {
-        lines.push(`  .createClaimableBalance({`);
-        lines.push(`    claimants: ['${op.destination || 'G...'}'],`);
-        lines.push(`    amount: '${op.amount || '100'}',`);
-        lines.push(`    asset: Asset.native()`);
+        lines.push(`  .addCreateAccount({`);
+        lines.push(`    destination: '${op.destination || 'G...'}',`);
+        lines.push(`    startingBalance: '${op.amount || '100'}'`);
         lines.push(`  })`);
       } else if (op.type === 'contract') {
         lines.push(`  .invokeContract({`);
@@ -127,11 +132,12 @@ export function SystemsPage() {
       lines.push(`  .setMemo('${operations[0].memo}')`);
     }
 
+    lines.push(`  .setTimebounds({ maxTime: '+${timeoutSecs}s' })`);
     lines.push(`  .build();`);
     lines.push(``);
-    lines.push(`// Sign & submit to Horizon / Soroban RPC`);
-    lines.push(`const receipt = await tx.submit(signerKeypair);`);
-    lines.push(`console.log('Finalized Tx Hash:', receipt.hash);`);
+    lines.push(`// Sign & submit to Horizon`);
+    lines.push(`const result = await builtTx.sign(keypair).submit();`);
+    lines.push(`console.log('Tx Hash:', result.hash);`);
 
     return lines.join('\n');
   }, [sourceKey, network, fee, timeoutSecs, operations]);
